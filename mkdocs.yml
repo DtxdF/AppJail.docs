@@ -1,0 +1,98 @@
+site_name: AppJail Documentation
+site_url: https://dtxdf.github.io/AppJail.docs/
+repo_url: https://github.com/DtxdF/AppJail/
+site_description: 'Simple and easy-to-use tool for creating portable jails.'
+site_author: 'Jesús Daniel Colmenares Oviedo <dtxdf@disroot.org>'
+theme:
+  name: material
+  logo: assets/logo.png
+  favicon: assets/logo.png
+  font:
+    text: Noto Sans
+    code: Roboto Mono
+  palette:
+    - media: '(prefers-color-scheme)'
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+      primary: black
+      accent: light blue
+    - media: '(prefers-color-scheme: light)'
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+      primary: black
+      accent: light blue
+    - media: '(prefers-color-scheme: dark)'
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+      primary: black
+      accent: light blue
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+nav:
+  - What is AppJail?: index.md
+  - Comparing: compare.md
+  - Installation: install.md
+  - Getting Started: getting-started.md
+  - Configuring: configure.md
+  - LinuxJails: linux.md
+  - Networking:
+    - Packet Filter: networking/packet-filter.md
+    - Alias: networking/alias.md
+    - Virtual Networks:
+      - Introduction: networking/virtual-networks/intro.md
+      - 'Alias & Virtual Networks': networking/virtual-networks/alias-and-virtual-networks.md
+      - NAT: networking/virtual-networks/NAT.md
+      - Port Forwarding: networking/virtual-networks/port-forwarding.md
+      - IP Address Conflicts: networking/virtual-networks/ip-address-conflicts.md
+    - Inheriting Host Network Stack: networking/ip-inherit.md
+    - Disabling Network Stack: networking/ip-disable.md
+    - Netgraph: networking/netgraph.md
+    - Bridges:
+      - Introduction: networking/bridges/intro.md
+      - Using Multiple Bridges (advanced): networking/bridges/multi-bridges.md
+      - Combining Virtual Networks and Bridges (advanced): networking/bridges/multi-virtual-networks-and-bridges.md
+    - VNET: networking/VNET.md
+    - 'DHCP & SLAAC': networking/DHCP-and-SLAAC.md
+    - DNS: networking/DNS.md
+  - ZFS: ZFS.md
+  - Resource limits (RACCT/RCTL): limits.md
+  - CPU Sets: cpuset.md
+  - Templates: templates.md
+  - Initscripts: initscripts.md
+  - Dependent Jails: dependent-jails.md
+  - 'Priorities & Boot Flag': priorities-and-boot-flag.md
+  - Logs: logs.md
+  - Makejails:
+    - Introduction: makejails/intro.md
+    - Deploying applications: makejails/deploy.md
+    - 'Arguments & Build Arguments': makejails/arguments-and-build-arguments.md
+    - Jailed GUI (x11) applications: makejails/x11.md
+    - 'Makejails & Initscripts': makejails/makejails-and-initscripts.md
+    - From Command-Line Interface: makejails/cli.md
+    - Maintenance of Cloned Makejails: makejails/maintenance.md
+    - Applying Makejails: makejails/apply.md
+    - Instructions: makejails/instructions.md
+  - Tiny Jails: tiny-jails.md
+  - Backups:
+    - Introduction: backups/intro.md
+    - Tarball: backups/tarball.md
+    - ZFS: backups/ZFS.md
+    - Copy: backups/copy.md
+  - 'Update & Upgrade': update-and-upgrade.md
+  - File System Management: fs-mgmt.md
+  - Trusted Users: trusted-users.md
+  - 'Supervisor/Healthcheckers': healthcheckers.md
+  - Images:
+    - Introduction: images/intro.md
+    - AJSPEC Specification: images/ajspec.md
+    - Maintenance of Installed Images: images/maintenance.md
+    - 'Images & Makejails': images/images-and-makejails.md
+  - Source Tree: source-tree.md
+  - Dynamic DEVFS Ruleset Management: DEVFS.md
