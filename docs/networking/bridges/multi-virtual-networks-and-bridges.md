@@ -54,6 +54,8 @@ appjail network detach jweb
 
     Remember to edit the respective templates so that the above changes persist, as described in `Bridges`.
 
+---
+
 **See also**:
 
 * [Bridges](intro.md)

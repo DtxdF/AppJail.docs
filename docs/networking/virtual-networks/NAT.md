@@ -121,6 +121,8 @@ appjail start jnonat
     networks with IP forwarding enabled simply to get better organization.
     Consider using [Bridges](../bridges/intro.md) when possible.
 
+---
+
 **See also**:
 
 * [Virtual Networks](intro.md)

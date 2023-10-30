@@ -43,6 +43,8 @@ Another host on the host network can use the host's IPv4 address (assuming it is
 ...
 ```
 
+---
+
 **See also**:
 
 * [Virtual Networks](intro.md)

@@ -36,6 +36,8 @@ appjail network detach -df jpub
     
     An interface cannot be used on a bridge that is a member of another bridge.
 
+---
+
 **See also**:
 
 * [Templates](../../templates.md)

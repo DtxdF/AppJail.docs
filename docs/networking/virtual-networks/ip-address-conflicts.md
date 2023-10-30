@@ -74,6 +74,8 @@ The above example reveals a big problem: `jtest` has a correct IP address, but `
 [00:00:13] [ debug ] Fixed: jail:nginx, old:10.32.0.16, new:172.0.0.7
 ```
 
+---
+
 **See also**:
 
 * [Virtual Networks](intro.md)
