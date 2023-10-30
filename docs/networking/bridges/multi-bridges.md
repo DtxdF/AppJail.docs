@@ -50,3 +50,10 @@ sb_jpv: flags=8863<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
         options=8<VLAN_MTU>
         inet 129.0.0.88 netmask 0xffffff00 broadcast 129.0.0.255
 ```
+
+---
+
+**See also**:
+
+* [Bridges](intro.md)
+* [DHCP & SLAAC](../DHCP-and-SLAAC.md)
