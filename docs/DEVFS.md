@@ -104,3 +104,25 @@ Run this Makejail and you will see the magic...
 # appjail cmd jexec jtest ls /dev
 bpf     fd      fuse    null    pts     random  stderr  stdin   stdout  urandom zero
 ```
+
+## Using a custom ruleset
+
+!!! warning
+
+    As you can see in this section, you can use a specific ruleset in combination with
+    the `device` option. However, this is not recommended since this feature is based
+    on exclusivity, i.e. rules are overwritten when loading, so two or more jails
+    should not overwrite each other's rules.
+
+```sh
+appjail quick jtest \
+    overwrite=force \
+    start \
+    device='include $devfsrules_hide_all' \
+    device='include $devfsrules_unhide_basic' \
+    device='include $devfsrules_unhide_login' \
+    mount_devfs \
+    devfs_ruleset=24
+```
+
+By combining the `device` option with `devfs_ruleset` and `linuxfs` or `mount_devfs`, `appjail quick` will set the ruleset you have specified and DEVFS will load the rules on jail startup.
