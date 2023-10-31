@@ -52,7 +52,10 @@ NAME
 gonic
 ```
 
-**WARNING**: When using ZFS as the backend file system `appjail image remove` will recursively remove all datasets including all references, such as clones. Be careful.
+!!! warning
+
+    When using ZFS as the backend file system `appjail image remove` will recursively
+    remove all datasets including all references, such as clones. Be careful.
 
 But what happens when we want to remove a specific tag?
 

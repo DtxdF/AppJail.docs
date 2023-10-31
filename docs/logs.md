@@ -168,7 +168,10 @@ Using the `-g` flag we can use shell glob patterns.
 appjail logs remove -g 'jails/otherjail/startup-start/2023-02-0[34].log'
 ```
 
-**WARNING**: When using ZFS as the backend file system `appjail logs remove` will recursively remove all datasets including all references, such as clones. Be careful.
+!!! warning
+
+    When using ZFS as the backend file system `appjail logs remove` will recursively
+    remove all datasets including all references, such as clones. Be careful.
 
 `appjail logs tail` can be used to display the last part of a file.
 
