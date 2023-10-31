@@ -155,6 +155,7 @@ By combining the `device` option with `devfs_ruleset` and `linuxfs` or `mount_de
 
 * [Makejails](makejails/intro.md)
 * [Virtual Networks](networking/virtual-networks/intro.md)
+* [LinuxJails](linux.md)
 * [DHCP & SLAAC](networking/DHCP-and-SLAAC.md)
 * [Alias & Virtual Networks](networking/virtual-networks/alias-and-virtual-networks.md)
 * [NAT](networking/virtual-networks/NAT.md)
