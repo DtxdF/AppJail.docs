@@ -105,6 +105,28 @@ Run this Makejail and you will see the magic...
 bpf     fd      fuse    null    pts     random  stderr  stdin   stdout  urandom zero
 ```
 
+## DEVFS and LinuxJails
+
+Instead of editing `/etc/devfs.rules` and restarting the `devfs` RC script, you can easily set the DEVFS rules that your LinuxJails needs.
+
+```sh
+appjail quick ubuntu \
+    alias \
+    virtualnet=":appjail0" \
+    nat \
+    osversion=bionic \
+    type=linux+debootstrap \
+    start \
+    linuxfs \
+    device='include $devfsrules_hide_all' \
+    device='include $devfsrules_unhide_basic' \
+    device='include $devfsrules_unhide_login' \
+    device='path shm unhide' \
+    device="path 'shm/*' unhide" \
+    overwrite=force \
+    template=template.conf
+```
+
 ## Using a custom ruleset
 
 !!! warning
