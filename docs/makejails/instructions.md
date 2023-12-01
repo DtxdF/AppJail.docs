@@ -713,9 +713,9 @@ If the file name contains the `+` sign, you must explicitly use the method.
 
 Execute a command and use its output (stdout) as the Makejail file.
 
-##### git - (syntax: git+url [--baseurl url] [--file makejail_filename] [--global | --local [--cachedir directory]])
+##### git - (syntax: git+url [--baseurl url] [--file makejail_filename] [--global | --local [--cachedir directory] | --tmp])
 
-Clone a `git(1)` repository in the global cache directory (`GLOBAL_GIT_CACHEDIR`) or in the local cache directory specified with `--cachedir` (default: `.makejail_local`) to get the Makejail named `makejail_filename` (default: `Makejail`).
+Clone a `git(1)` repository in the global cache directory (`GLOBAL_GIT_CACHEDIR`) or in the local cache directory specified with `--cachedir` (default: `.makejail_local`) to get the Makejail named `makejail_filename` (default: `Makejail`). Using the `--tmp` parameter uses a temporary directory as the cache directory, so the `git(1)` repository will be cloned each time.
 
 The `--basedir` parameter is used as a URL prefix and is intended for other git-like methods, such as those mentioned in the following sections.
 
