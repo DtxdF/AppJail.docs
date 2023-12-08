@@ -354,7 +354,7 @@ ENV name[=value]
 
 Environment variables to be used by the `RUN` command.
 
-Using the `-V` parameter in `appjail makejail` we can pass environment variables valid only by the `build` stage.
+We can pass environment variables from the command line using the `-V` parameter supported by `appjail apply`, `appjail makejail`, `appjail start`, `appjail stop` and `appjail run`.
 
 #### Examples
 
