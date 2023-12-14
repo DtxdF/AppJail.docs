@@ -129,7 +129,7 @@ See `import+jail`.
 
 ###### portable
 
-Include only portable files. These are the jail directory, the configuration file describing the jail and the initscript.
+Include only portable files. These are the jail directory, the configuration file describing the jail, the initscript and volumes.
 
 ###### compress
 
