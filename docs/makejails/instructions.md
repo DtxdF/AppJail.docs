@@ -1317,3 +1317,37 @@ Use `appjail stop` to stop the jail.
 ```
 STOP
 ```
+
+### VOLUME
+
+#### Syntax
+
+```
+VOLUME [--group gid] [--mountpoint mountpoint] [--owner uid] [--perm mode] [--type fs_type] volume
+```
+
+##### --group
+
+Changes the group ID of the specified volume.
+
+##### --mountpoint
+
+Path within the jail to mount the specified volume. Default is `{VOLUMESDIR}/{volume_name}`.
+
+##### --owner
+
+Changes the user ID of the specified volume.
+
+##### --perm
+
+Changes the file mode of the specified volume.
+
+##### --type
+
+File system type. Valid are `nullfs` and `<pseudofs>`.
+
+#### Examples
+
+```
+VOLUME db
+```
