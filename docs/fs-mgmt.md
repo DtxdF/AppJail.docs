@@ -130,6 +130,101 @@ vi.recover/
 
 It is preferable and advisable to reboot, since as mentioned above, an application may have problems when moving files and directories here and there while running.
 
+### VolumeFS
+
+VolumeFS is another pseudo-file system supported by AppJail. Again, this implies that it does not exist on your system. This pseudo-filesystem does the same thing as `nullfs` and `<pseudofs>` plus abstracts more things specifically related to owner, group, permissions and mount point.
+
+To get a better idea of what this pseudo file system solves, let's create a new jail with some volumes.
+
+**Makejail**:
+
+```
+OPTION start
+OPTION overwrite=force
+OPTION volume=db perm:750 owner:10001
+OPTION volume=logs perm:750 owner:10001
+
+CMD pw useradd -n app -d /app -u 10001
+CMD mkdir -p /app
+CMD chown app:app /app
+```
+
+```
+# appjail makejail -j jtest
+...
+[00:00:14] [ debug ] [jtest] Configuring volumes ...
+[00:00:14] [ debug ] [jtest] volume (db): "group:" "mountpoint:" "owner:10001" "perm:" "type:"
+[00:00:14] [ debug ] [jtest] volume (logs): "group:" "mountpoint:" "owner:10001" "perm:" "type:"
+...
+# appjail volume list jtest
+NAME  MOUNTPOINT     TYPE        UID    GID  PERM
+db    /volumes/db    <pseudofs>  10001  -    750
+logs  /volumes/logs  <pseudofs>  10001  -    750
+```
+
+By default, when the mount point is not specified, `{VOLUMESDIR}/{volume_name}` is used. `<pseudofs>` is used by default, but you can use `nullfs`, however only these values are allowed. `UID`, `GID` and `PERM` are optional.
+
+As you can see above, two volumes were created with some parameters. AppJail does nothing at this point until you create a new fstab entry for the specified jail.
+
+```
+# mkdir -p /tmp/volumes/db
+# mkdir -p /tmp/volumes/logs
+# appjail fstab jail jtest set -d /tmp/db -m db -t '<volumefs>'
+# appjail fstab jail jtest set -d /tmp/logs -m logs -t '<volumefs>'
+# appjail fstab jail jtest
+NRO  ENABLED  NAME  DEVICE     MOUNTPOINT  TYPE        OPTIONS  DUMP  PASS
+0    1        -     /tmp/db    db          <volumefs>  rw       0     0
+1    1        -     /tmp/logs  logs        <volumefs>  rw       0     0
+```
+
+At this point, you can restart the jail.
+
+```sh
+appjail restart jail
+```
+
+Our volumes should be mounted with the parameters specified above.
+
+```
+# appjail fstab jail jtest mounted
+/usr/local/appjail/releases/amd64/14.0-RELEASE/default/release -> /usr/local/appjail/jails/jtest/jail/.appjail
+/tmp/db -> /usr/local/appjail/jails/jtest/jail/volumes/db
+/tmp/logs -> /usr/local/appjail/jails/jtest/jail/volumes/logs
+devfs -> /usr/local/appjail/jails/jtest/jail/dev
+# appjail cmd jexec jtest sh -c 'ls -ld /volumes/*'
+drwxr-x---  2 app wheel 512 Dec 13 21:30 /volumes/db
+drwxr-x---  2 app wheel 512 Dec 13 22:57 /volumes/logs
+```
+
+Volume parameters persist in an image. This is very useful when a developer creates a Makejail that deploys an application that requires specified directories with specified parameters (as described above). Since the developer knows his application better than the user who just wants to use the application, it is preferable to use what he specified. As you can see, the volumes are just a suggestion for the end user, they are not mandatory.
+
+```
+# appjail makejail -j jtest
+...
+# appjail stop jtest
+...
+# appjail image export jtest
+...
+# tar tf /usr/local/appjail/cache/images/jtest/latest-amd64-image.appjail './conf/volumes/'
+./conf/volumes/
+./conf/volumes/db/
+./conf/volumes/logs/
+./conf/volumes/logs/mountpoint
+./conf/volumes/logs/uid
+./conf/volumes/logs/perm
+./conf/volumes/logs/type
+./conf/volumes/db/mountpoint
+./conf/volumes/db/uid
+./conf/volumes/db/perm
+./conf/volumes/db/type
+# appjail image jail -i jtest jother
+...
+# appjail volume list jother
+NAME  MOUNTPOINT     TYPE        UID    GID  PERM
+db    /volumes/db    <pseudofs>  10001  -    750
+logs  /volumes/logs  <pseudofs>  10001  -    750
+```
+
 ### Notes
 
 `appjail fstab jail ... compile` will do some things for you. If the file system type is `nullfs` it will create the file or directory inside the jail specified by `MOUNTPOINT` depending on whether `DEVICE` is a file or directory, or an error is displayed when the file's type is not a file or directory. If the file system type is `<pseudofs>` it will perform the same things as `nullfs` plus other things described in `PseudoFS`. If none of these file system types match and `MOUNTPOINT` does not exist inside the jail, a directory pointing to that path will be created.
@@ -140,3 +235,5 @@ It is preferable and advisable to reboot, since as mentioned above, an applicati
 
 * [Virtual Networks](networking/virtual-networks/intro.md)
 * [LinuxJail](linux.md)
+* [Images](images/intro.md)
+* [Makejails](makejails/intro.md)
