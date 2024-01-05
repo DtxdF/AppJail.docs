@@ -10,7 +10,7 @@
 | CPU Sets | Yes | No | Yes | Yes | Yes | CPU Sets |
 | IPv6 support | Yes (+SLAAC) | Yes | Yes | Yes | Yes | IPv6 support |
 | Linux containers | Yes  | Yes | ?? | Yes | ?? | Linux containers |
-| DEVFS support | Yes | No | No | No | No | DEVFS support |
+| Dynamic DEVFS Ruleset Management | Yes | No | No | No | No | Dynamic DEVFS Ruleset Management |
 | Network management | Virtual networks, Bridges  | No | Subnet, requires `sysutils/potnet` | No | No | Network management |
 | Jail dependency | Yes | No | Yes | Yes | No | Jail dependency |
 | Supervisor | Yes (Healthcheckers) | No | No | No | No | Supervisor |
