@@ -227,7 +227,8 @@ logs  /volumes/logs  <pseudofs>  10001  -    750
 
 ### Notes
 
-`appjail fstab jail ... compile` will do some things for you. If the file system type is `nullfs` it will create the file or directory inside the jail specified by `MOUNTPOINT` depending on whether `DEVICE` is a file or directory, or an error is displayed when the file's type is not a file or directory. If the file system type is `<pseudofs>` it will perform the same things as `nullfs` plus other things described in `PseudoFS`. If none of these file system types match and `MOUNTPOINT` does not exist inside the jail, a directory pointing to that path will be created.
+* `appjail fstab jail ... compile` will do some things for you. If the file system type is `nullfs` it will create the file or directory inside the jail specified by `MOUNTPOINT` depending on whether `DEVICE` is a file or directory, or an error is displayed when the file's type is not a file or directory. If the file system type is `<pseudofs>` it will perform the same things as `nullfs` plus other things described in `PseudoFS`. If none of these file system types match and `MOUNTPOINT` does not exist inside the jail, a directory pointing to that path will be created.
+* You can reverse the mount order of a device by using the `:reverse` suffix, although it is only valid for `nullfs` and `<pseudofs>`. This implies that the `mountpoint` is mounted on `device`.
 
 ---
 
