@@ -3,7 +3,7 @@ If you want to contribute to the AppJail project or just want to get the latest 
 ```sh
 git clone https://github.com/DtxdF/AppJail.git
 cd AppJail
-make install
+make install APPJAIL_VERSION=`make -V APPJAIL_VERSION`+`git rev-parse HEAD`
 ```
 
 Another way to get the latest AppJail features is to install `sysutils/appjail-devel` port:
