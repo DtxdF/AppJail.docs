@@ -40,7 +40,7 @@ appjail network detach -df jpub
 
 !!! warning
 
-    If you use bridges on a host with a packet filter, you should set at least `net.link.bridge.pfil_member` and `net.link.bridge.pfil_bridge`, and depending on your needs, `net.link.bridge.pfil_onlyip` to `0`. Read `if_bridge(4)` for an explanation of this sysctls. If you don't do this you will have no connection with the outside.
+    If you use bridges on a host with a packet filter, you should set at least `net.link.bridge.pfil_member` and `net.link.bridge.pfil_bridge`, and depending on your needs, `net.link.bridge.pfil_onlyip` to `0`. Read `if_bridge(4)` for an explanation of these sysctls. If you don't do this you will have no connection with the outside.
 
 **See also**:
 
