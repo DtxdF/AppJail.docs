@@ -12,7 +12,7 @@ sysrc pf_enable="YES"
 sysrc pflog_enable="YES"
 # Put the anchors in pf.conf(5):
 cat << "EOF" >> /etc/pf.conf
-nat-anchor 'appjail-nat/jail/*'
+nat-anchor "appjail-nat/jail/*"
 nat-anchor "appjail-nat/network/*"
 rdr-anchor "appjail-rdr/*"
 EOF
