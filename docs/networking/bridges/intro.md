@@ -36,11 +36,11 @@ appjail network detach -df jpub
     
     An interface cannot be used on a bridge that is a member of another bridge.
 
----
-
 !!! warning
 
     If you use bridges on a host with a packet filter, you should set at least `net.link.bridge.pfil_member` and `net.link.bridge.pfil_bridge`, and depending on your needs, `net.link.bridge.pfil_onlyip` to `0`. Read `if_bridge(4)` for an explanation of these sysctls. If you don't do this you will have no connection with the outside.
+
+---
 
 **See also**:
 
