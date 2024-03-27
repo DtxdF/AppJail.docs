@@ -98,7 +98,7 @@ nav:
   - Dynamic DEVFS Ruleset Management: DEVFS.md
 plugins:
   - with-pdf:
-      cover_subtitle: 'Simple and easy-to-use tool for creating portable jails - test'
+      cover_subtitle: 'Simple and easy-to-use tool for creating portable jails'
       cover_logo: 'https://github.com/DtxdF/AppJail/blob/main/assets/img/Imagotype.png?raw=true'
       output_path: document.pdf
       copyright: 'Copyright &copy; 2022-2024'
