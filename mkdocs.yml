@@ -102,3 +102,4 @@ plugins:
       cover_logo: 'https://github.com/DtxdF/AppJail/blob/main/assets/img/Imagotype.png?raw=true'
       output_path: document.pdf
       copyright: 'Copyright &copy; 2022-2024'
+  - search
