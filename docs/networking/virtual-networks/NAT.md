@@ -121,6 +121,14 @@ appjail start jnonat
     networks with IP forwarding enabled simply to get better organization.
     Consider using [Bridges](../bridges/intro.md) when possible.
 
+!!! warning
+
+    If `EXT_IF` and `ON_IF` are configured to a vtnet device (e.g., vtnet0), you may
+    experience extremely slow download speed inside the jail. That might relate to a
+    checksum issue described [here](https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=277718).
+    You can set `hw.vtnet.csum_disable="1"` in /boot/loader.conf to make CPU to
+    perform the checksum instead of your NIC to solve the problem temporarily.
+
 ---
 
 **See also**:
