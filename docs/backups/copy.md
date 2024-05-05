@@ -1,15 +1,12 @@
 Instead of saving space and time, you can copy an entire jail using another jail. It is very simple:
 
 ```sh
-appjail jail create -I copy=bullseye debian11
-# or
-appjail quick debian11 \
-    copy=bullseye \
-    alias=appjail0 \
-    virtualnet="development" \
-    devfs_ruleset=11 \
-    template=/tmp/linux.conf \
-    nat=network:development \
+appjail jail create -I copy=metube metubev2
+# recommended:
+appjail quick metubev2 \
+    copy=metube \
+    virtualnet=":<random> default" \
+    nat \
     start
 ```
 

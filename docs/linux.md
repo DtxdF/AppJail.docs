@@ -11,9 +11,9 @@ AppJail will load the following kernel modules before using this option:
 * `linux64`: `amd64` and `aarch64` only.
 
 ```sh
-appjail fetch debootstrap bullseye
+appjail fetch debootstrap bookworm
 appjail quick debian \
-    osversion=bullseye \
+    osversion=bookworm \
     type=linux+debootstrap \
     start \
     linuxfs \
@@ -22,7 +22,7 @@ appjail quick debian \
     login
 ```
 
-`appjail fetch` will download Debian Bullseye. We need to set the release version with `osversion`, use the `linuxfs` option to mount the filesystems used by the linux distribution, use the ruleset `0` and use a linux-specific template.
+`appjail-fetch(1)` will download Debian Bullseye. We need to set the release version with `osversion`, use the `linuxfs` option to mount the filesystems used by the linux distribution, use the ruleset `0` and use a linux-specific template.
 
 The ruleset can be different, you just need to allow `/dev/shm` and `/dev/fd`.
 

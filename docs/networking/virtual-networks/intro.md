@@ -22,7 +22,7 @@ appjail quick hello \
     start
 ```
 
-In the above case, `appjail quick` will run `appjail network auto-create` internally which will create a Virtual Network with some options defined in your AppJail configuration file, such as `AUTO_NETWORK_NAME` (default: `ajnet`) as its name, `AUTO_NETWORK_ADDR` (default: `10.0.0.0/10`) as its address and `AUTO_NETWORK_DESC` (default: `AppJail Network`) as its description. 
+In the above case, `appjail-quick(1)` will run `appjail-network(1)` `auto-create` internally which will create a Virtual Network with some options defined in your AppJail configuration file, such as `AUTO_NETWORK_NAME` as its name, `AUTO_NETWORK_ADDR` as its address and `AUTO_NETWORK_DESC` as its description. 
 
 The `virtualnet` option is very interesting. As you can see it is defined as `:hello`. The double colon is necessary, because the network name has to be defined first, so when we use an "empty network name" it is just a hint for AppJail to create the default Virtual Network. After the double colon is the interface name, which in this case is `hello`. We can use some other special values such as:
 
@@ -40,7 +40,7 @@ appjail quick hello \
 
 ## Creating a Virtual Network Manually
 
-To create a virtual network, we can use the `appjail network` command, but we need three things: network address, CIDR and the network name. The following example creates a network named `development` using `10.42.0.0` as the network address, and `24` as the CIDR.
+To create a virtual network, we can use the `appjail-network(1)` command, but we need three things: network address, CIDR and the network name. The following example creates a network named `development` using `10.42.0.0` as the network address, and `24` as the CIDR.
 
 ```sh
 appjail network add development 10.42.0.0/24
@@ -72,7 +72,7 @@ appjail quick otherjail \
     start
 ```
 
-To obtain the IP address of each jail we can use `appjail network hosts`.
+To obtain the IP address of each jail we can use `appjail-network(1)` `hosts`.
 
 **myjail**:
 
@@ -101,7 +101,7 @@ PING 10.42.0.2 (10.42.0.2): 56 data bytes
 round-trip min/avg/max/stddev = 0.163/0.167/0.175/0.005 ms
 ```
 
-Instead of using `appjail network add` to create a new virtual network, you can specify one using the `network` option in `appjail quick`.
+Instead of using `appjail-network(1)` `add` to create a new virtual network, you can specify one using the `network` option in `appjail-quick(1)`.
 
 ```sh
 appjail quick jdns \
@@ -111,4 +111,4 @@ appjail quick jdns \
     overwrite
 ```
 
-This is useful for when you need to run a Makejail in multiple environments without resorting to `appjail network add`, but for simple use cases consider the [auto-created network](#creating-a-virtual-network-manually) using `appjail network auto-create`.
+This is useful for when you need to run a Makejail in multiple environments without resorting to `appjail-network(1)` `add`, but for simple use cases consider the [auto-created network](#creating-a-virtual-network-manually) using `appjail-network(1)` `auto-create`.

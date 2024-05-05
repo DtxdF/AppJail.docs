@@ -1,4 +1,4 @@
-AppJail is an open-source BSD-3 licensed framework entirely written in sh(1) and C to create isolated, portable and easy to deploy environments using FreeBSD jails that behaves like an application.
+AppJail is an open-source BSD-3 licensed framework entirely written in POSIX shell and C to create isolated, portable and easy to deploy environments using FreeBSD jails that behaves like an application.
 
 Its goals are to simplify life for sysadmins and developers by providing a unified interface that automates the jail workflow by combining the base FreeBSD tools.
 

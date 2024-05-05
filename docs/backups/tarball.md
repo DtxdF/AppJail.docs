@@ -5,7 +5,7 @@ You can probably open a tarball on unix-like and non-unix operating systems, so 
 ##### Syntax
 
 ```
-output:out_name [portable] [compress:algo]
+output:outname [portable] [compress:algo]
 ```
 
 ###### output
@@ -33,7 +33,7 @@ If `compress` is not defined, no compression is applied.
 
 ##### Description
 
-Export the jail directory (`{JAILDIR}/{JAIL_NAME}/jail`).
+Export the jail directory to a tarball file.
 
 ##### Examples
 
@@ -46,24 +46,24 @@ appjail jail create -I export+jail="output:nginx.tzst compress:zstd" nginx
 ##### Syntax
 
 ```
-output:out_name [portable] [compress:algo]
+output:outname [portable] [compress:algo]
 ```
 
 ###### output
 
-See `export+jail`.
+Output name.
 
 ###### portable
 
-Include only portable files. These are the jail directory, the configuration file describing the jail and the initscript.
+Include only portable files, that is, the jail directory, the **InitScript**, the configuration file that describes the jail, and the specifications of volumes used by the jail. This is used by `appjail-image(1)`.
 
 ###### compress
 
-See `export+jail`.
+If specified, the file will be compressed.
 
 ##### Description
 
-Export the root directory of the jail (`{JAILDIR}/{JAIL_NAME}`).
+Export the root directory of the jail to a tarball file.
 
 ##### Examples
 
@@ -76,12 +76,12 @@ appjail jail create -I export+root="output:nginx-root.tzst compress:zstd" nginx
 ##### Syntax
 
 ```
-input:in_file [portable] [compress:algo]
+input:file [portable] [compress:algo]
 ```
 
 ###### input
 
-Tarball to import.
+Tarball file.
 
 ###### portable
 
@@ -93,7 +93,7 @@ Ignored, but used by `zfs+import+jail` and `zfs+import+root`.
 
 ##### Description
 
-Import the tarball to the jail directory (`{JAILDIR}/{JAIL_NAME}/jail`).
+Create a new jail by importing a tarball file into the jail directory.
 
 ##### Examples
 
@@ -120,24 +120,24 @@ appjail quick nginx \
 ##### Syntax
 
 ```
-input:in_file [portable] [compress:algo]
+input:file [portable] [compress:algo]
 ```
 
 ###### input
 
-See `import+jail`.
+Tarball file.
 
 ###### portable
 
-Include only portable files. These are the jail directory, the configuration file describing the jail, the initscript and volumes.
+Include only portable files, that is, the jail directory, the **InitScript**, the configuration file that describes the jail, and the specifications of volumes used by the jail. This is used by `appjail-image(1)`.
 
 ###### compress
 
-See `import+jail`.
+Ignored, but used by `zfs+import+root` and `zfs+import+root`.
 
 ##### Description
 
-Import the tarball to the root directory of the jail (`{JAILDIR}/{JAIL_NAME}`).
+Create a new jail by importing a tarball file into the root directory of the jail.
 
 ##### Examples
 

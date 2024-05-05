@@ -9,7 +9,7 @@ OPTION virtualnet=:webapp01 default
 OPTION nat
 ```
 
-All we have to do is run `appjail makejail`.
+All we have to do is run `appjail-makejail(1)`.
 
 ```sh
 appjail makejail -j webapp01

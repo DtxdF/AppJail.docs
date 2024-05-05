@@ -4,7 +4,7 @@ AppJail can limit jail resources using `rctl(4)`. To use it, you need to enable 
 kern.racct.enable=1
 ```
 
-Like many AppJail commands, limits can be set using `appjail quick` or its own command to apply `rctl(4)` rules to an existing jail.
+Like many AppJail commands, limits can be set using `appjail-quick(1)` or its own command to apply `rctl(4)` rules to an existing jail.
 
 ```sh
 # Using appjail quick:
@@ -28,7 +28,7 @@ appjail-config set -Ij nginx exec.created='appjail limits off ${name}'
 appjail start nginx
 ```
 
-To display the current rules of a jail, run `appjail limits list`.
+To display the current rules of a jail, run `appjail-limits(1)` `list`.
 
 ```console
 # appjail limits list nginx

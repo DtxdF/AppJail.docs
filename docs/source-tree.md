@@ -99,7 +99,7 @@ appjail quick jtest \
 
 #### Naming convention
 
-As you can see above, the release name is used by default, which is not recommended when using `appjail fetch src`.
+As you can see above, the release name is used by default, which is not recommended when using `appjail-fetch(1)` `src`.
 
 ```console
 # appjail fetch list
@@ -109,7 +109,7 @@ amd64  13.2-RELEASE  default
 ...
 ```
 
-As you can see, there is not enough information for this release. Of course, the architecture, the version and the name, but when using `appjail fetch src` AppJail will set `ARCH` to `TARGET` instead of `TARGET_ARCH`. As you can see below there is an ambiguity.
+As you can see, there is not enough information for this release. Of course, the architecture, the version and the name, but when using `appjail-fetch(1)` `src` AppJail will set `ARCH` to `TARGET` instead of `TARGET_ARCH`. As you can see below there is an ambiguity.
 
 ```console
 # make -C /usr/src targets
@@ -156,7 +156,7 @@ AppJail can update both jails and releases easily. Of course, updating an instal
 
 ##### jail
 
-The requirement to update a jail is that it must be a thickjail, but to update using the source tree, i.e. `appjail update jail`, will make some assumptions. If the jail has a release directory that has the dummy file `.from_src`, it means that this jail was installed using a source tree, so `appjail update jail` should proceed to update the jail using the source instead of the binary form. This, of course, creates a link between the jail and the release, which we must take into account when we are going to destroy the release, update the jail or export it to another system.
+The requirement to update a jail is that it must be a thickjail, but to update using the source tree, i.e. `appjail-update(1)` `jail`, will make some assumptions. If the jail has a release directory that has the dummy file `.from_src`, it means that this jail was installed using a source tree, so `appjail-update(1)` `jail` should proceed to update the jail using the source instead of the binary form. This, of course, creates a link between the jail and the release, which we must take into account when we are going to destroy the release, update the jail or export it to another system.
 
 If we export the jail to another system we must export/import the release to that system unless we don't need to use the source tree of that system anymore. As a tip, you can export the jail and export the release with only the dummy files to have less files to send, ignoring the content of the `release` directory, but of course, you will need to install the world and the kernel (if you want to).
 
@@ -201,11 +201,11 @@ Now update the jail (and also build the world and, if any, the kernel):
 [00:18:33] [ info  ] [jtest] Done.
 ```
 
-As you can see, AppJail not only build and install the world but also build and install the kernel. AppJail knows this depending on whether you successfully install the kernel when executing `appjail fetch src`. You can avoid running the `buildkernel` and `installkernel` target by using the `-K` parameter in `appjail update jail`.
+As you can see, AppJail not only build and install the world but also build and install the kernel. AppJail knows this depending on whether you successfully install the kernel when executing `appjail-fetch(1)` `src`. You can avoid running the `buildkernel` and `installkernel` target by using the `-K` parameter in `appjail-update(1)` `jail`.
 
 AppJail needs to know some details when running the required targets, such as `TARGET`, `TARGET_ARCH` (if any), `KERNCONF`, and the source tree. AppJail knows these using dummy files of the release directory of that jail.
 
-As you can see, there are some missing targets that are not executed compared to when we run `appjail fetch src`, this is because you first need to run `etcupdate -B` and `delete-old` and `delete-old-libs` targets for yourself when you consider necessary.
+As you can see, there are some missing targets that are not executed compared to when we run `appjail-fetch(1)` `src`, this is because you first need to run `etcupdate -B` and `delete-old` and `delete-old-libs` targets for yourself when you consider necessary.
 
 ```console
 # appjail etcupdate jail jtest -B
@@ -218,16 +218,16 @@ As you can see, there are some missing targets that are not executed compared to
 
 ##### release
 
-Although you can perfectly run `appjail update release`, this will not work as expected.
+Although you can perfectly run `appjail-update(1)` `release`, this will not work as expected.
 
 ```console
 # appjail update release
 [00:00:00] [ error ] [default] This is a release installed from a source tree, so you will have to run `appjail fetch src` by yourself.
 ```
 
-As the command guesses, we need to use `appjail fetch src`. This is because `appjail update release` would not be able to guess a perfect workflow for all users, so it is preferable to leave the path clean for the user.
+As the command guesses, we need to use `appjail-fetch(1)` `src`. This is because `appjail-update(1)` `release` would not be able to guess a perfect workflow for all users, so it is preferable to leave the path clean for the user.
 
-As you can see in the previous sections, all the targets that are needed to create a clean release are executed, but this implies that if we call `appjail fetch src` again, some files will be overwritten. This is fine if you don't have any problems. For example, if you have a thinjail, and you separate the data that must persist (mounted from the host to inside the jail) from the data that is ephemeral, you can recreate the jail and everything will work as expected, plus the new data from the recent update. If you have a thickjail, no problem, remember that the release and a thickjail does not share data in a similar way to thinjails. But if you really want to update a release like jails (see previous section), you just have to indicate `appjail fetch src` not to execute some targets, namely `distrib-dirs`, `distribution`, `delete-old` and `delete-old-libs`. Before updating, you should have run `etcupdate extract` (this is only needed once).
+As you can see in the previous sections, all the targets that are needed to create a clean release are executed, but this implies that if we call `appjail-fetch(1)` `src` again, some files will be overwritten. This is fine if you don't have any problems. For example, if you have a thinjail, and you separate the data that must persist (mounted from the host to inside the jail) from the data that is ephemeral, you can recreate the jail and everything will work as expected, plus the new data from the recent update. If you have a thickjail, no problem, remember that the release and a thickjail does not share data in a similar way to thinjails. But if you really want to update a release like jails (see previous section), you just have to indicate `appjail-fetch(1)` `src` not to execute some targets, namely `distrib-dirs`, `distribution`, `delete-old` and `delete-old-libs`. Before updating, you should have run `etcupdate extract` (this is only needed once).
 
 ```console
 # appjail etcupdate release -m extract
@@ -270,7 +270,7 @@ There is not much magic in the following command, it simply creates an empty dir
 
 #### release
 
-When we use `appjail fetch empty`, AppJail does not know what release and architectures we are going to use, although we can specify them using `-a` and `-v`, but for this example we do not specify them.
+When we use `appjail-fetch(1)` `empty`, AppJail does not know what release and architectures we are going to use, although we can specify them using `-a` and `-v`, but for this example we do not specify them.
 
 ```console
 # appjail fetch empty
@@ -284,7 +284,7 @@ If the directory does not exist, it is created and displayed in the output. If `
 .done   .empty  release
 ```
 
-There are three files. `.done` is to indicate to `fetch empty` that this release has been successfully created, but it is irrelevant for this case. `.empty` is a hint for other commands like `appjail update release` and `appjail upgrade release` not to update/upgrade this release. And finally and most importantly, the `release` directory is empty and is the one we use to put the release files.
+There are three files. `.done` is to indicate to `fetch empty` that this release has been successfully created, but it is irrelevant for this case. `.empty` is a hint for other commands like `appjail-update(1)` `release` and `appjail-upgrade(1)` `release` not to update/upgrade this release. And finally and most importantly, the `release` directory is empty and is the one we use to put the release files.
 
 #### Profit!
 

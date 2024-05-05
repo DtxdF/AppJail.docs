@@ -65,7 +65,7 @@ nav:
   - Resource limits (RACCT/RCTL): limits.md
   - CPU Sets: cpuset.md
   - Templates: templates.md
-  - Initscripts: initscripts.md
+  - InitScripts: initscripts.md
   - Dependent Jails: dependent-jails.md
   - 'Priorities & Boot Flag': priorities-and-boot-flag.md
   - Logs: logs.md
@@ -74,7 +74,7 @@ nav:
     - Deploying applications: makejails/deploy.md
     - 'Arguments & Build Arguments': makejails/arguments-and-build-arguments.md
     - Jailed GUI (x11) applications: makejails/x11.md
-    - 'Makejails & Initscripts': makejails/makejails-and-initscripts.md
+    - 'Makejails & InitScripts': makejails/makejails-and-initscripts.md
     - From Command-Line Interface: makejails/cli.md
     - Maintenance of Cloned Makejails: makejails/maintenance.md
     - Applying Makejails: makejails/apply.md

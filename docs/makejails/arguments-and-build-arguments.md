@@ -21,7 +21,7 @@ SERVICE php-fpm start
 
 Now, the user can install a PHP version such as `www/php80`, `www/php81`, `www/php82` or any available version.
 
-The default value for `php_ver` is `80`, but it can be changed simply by using `--php_ver` in `appjail makejail`.
+The default value for `php_ver` is `80`, but it can be changed simply by using `--php_ver` in `appjail-makejail(1)`.
 
 ```sh
 appjail makejail -f Makejail -j php -- --php_ver 81
@@ -40,16 +40,16 @@ OPTION nat
 
 Arguments make the Makejail dynamic, but they can only be used for the current stage. There are some cases where we need to use dynamic values in all stages.
 
-Build arguments can be used to replace values regardless of the current stage. `appjail makejail` uses them after compiling all Makejails.
+Build arguments can be used to replace values regardless of the current stage. `appjail-makejail(1)` uses them after compiling all Makejails.
 
 To use build arguments use a syntax like `%{name[: | !][value]}` on any line, although it is recommended to use them on the first lines.
 
 * `name`: It is recommended to write it in upper case.
-* `: | !`: If the `:` character is used, `value` will be used as default value when not set by the user. If the `!` is used, `appjail makejail` will complain when the build argument is not set by the user, or in other words, this causes the build argument to be required and `value` is used as a description.
+* `: | !`: If the `:` character is used, `value` will be used as default value when not set by the user. If the `!` is used, `appjail-makejail(1)` will complain when the build argument is not set by the user, or in other words, this causes the build argument to be required and `value` is used as a description.
 
 A good example is when using Python. The Python executable is named `pythonx.y`, where `x` is the major version and `y` is the minor version. If we need to use Python in some stages for an application, we must use such numbers. Of course, the application must be written to use the specific python version and there are better options for the above example such as using shegbang.
 
-`appjail makejail` uses the name of the build arguments to search and replace in the same way as in the `REPLACE` command.
+`appjail-makejail(1)` uses the name of the build arguments to search and replace in the same way as in the `REPLACE` command.
 
 Arguments can use other arguments as a value, but the `}` character must be escaped using `\`
 
@@ -59,7 +59,7 @@ Arguments can use other arguments as a value, but the `}` character must be esca
 %{PYTHON_MINOR:9}
 ```
 
-The example above shows what arguments look like. When `appjail makejail` sees a line that uses the `%{PYTHON_EXECUTABLE}` (or any other) build argument, it replaces it with its value. For example:
+The example above shows what arguments look like. When `appjail-makejail(1)` sees a line that uses the `%{PYTHON_EXECUTABLE}` (or any other) build argument, it replaces it with its value. For example:
 
 ```
 CMD %{PYTHON_EXECUTABLE}

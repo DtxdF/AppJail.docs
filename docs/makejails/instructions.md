@@ -1,175 +1,52 @@
-Makejail is a text document that contains all the instructions for building a jail.
-
-Makejail is another layer to abstract many processes to build a jail, configure it, install applications, configure them and much more.
-
-The idea is to provide developers and sysadmins a way to recreate the exact environment that the application needs.
-
-Users of a project containing a Makejail file can use it to install and configure the application with a few commands.
-
-This section describes the commands you can use in a Makejail.
-
-## Specification
+## Instructions
 
 ### ADD
 
-#### Syntax
-
 ```
-ADD [--verbose] url [dst]
+ADD [--verbose] url [destination]
 ```
 
-##### --verbose
+Download and extract a tarball file from <ins>url</ins> to the jail directory or <ins>destination</ins>, a path relative to the jail directory, using the program specified by the `MAKEJAIL_ADD_FETCH_CMD` parameter. Use `--verbose` to produce a verbose output when extracting the tarball using `tar(1)`.
 
-See`-v, --verbose` in `tar(1)`.
-
-##### url
-
-Tarball URL.
-
-##### dst
-
-The path relative to the jail directory to extract the tarball.
-
-`WORKDIR` affects this command.
-
-#### Description
-
-Download and extract a tarball file.
-
-Useful for `Empty jails`.
-
-#### Examples
-
-```
-ADD https://dl-cdn.alpinelinux.org/alpine/v3.17/releases/x86_64/alpine-minirootfs-3.17.0-x86_64.tar.gz
-```
+`WORKDIR` can affect this instruction.
 
 ### ARG
 
-#### Syntax
-
 ```
-ARG name[?][=[default_value]]
+ARG name[[?]=[default-value]]
 ```
 
-#### Description
+Create arguments as specified by `appjail-initscript(5)`. If no default value is specified, the arguments become non-optional unless `?` is used. When `?` is used, the user can set a parameter to an empty value.
 
-Creates arguments to the current stage. See [Initscripts](../initscripts.md) for more details.
+You don't need the argument value enclosed in double quotes even when it has spaces.
 
-If `default_value` is not defined, the argument will be a non-optional argument unless `?=` is used.
-
-This instruction passes its arguments to the `CMD` instruction through environment variables. See [CMD](#cmd) for details.
-
-#### Examples
-
-```
-ARG nginx_conf
-ARG use_php_fpm=0
-```
+See `CMD` for how arguments are passed to the process.
 
 ### CLEAR
 
-#### Syntax
-
 ```
-CLEAR [entrypoint | user | workdir | stage]
+CLEAR [entrypoint|user|workdir|stage]
 ```
 
-##### entrypoint
+Clear the value previously set by one of the following instructions: `ENTRYPOINT`, `USER`, `WORKDIR` or `STAGE`.
 
-Resets `ENTRYPOINT` to the default value. See [ENTRYPOINT](#entrypoint_1) for more details.
-
-##### user
-
-Resets `USER` to the default value. See [USER](#user_1) for more details.
-
-##### workdir
-
-Resets `WORKDIR` to the default value. See [WORKDIR](#workdir_1) for more details.
-
-##### stage
-
-Removes all commands written up to this command in the current stage.
-
-#### Description
-
-Resets the value of a command.
-
-#### Examples
-
-```
-CLEAR entrypoint
-CLEAR user
-```
+In the case of the `STAGE` instruction, all commands written up to this instruction and in the current stage are removed.
 
 ### CMD
 
-#### Syntax
-
 ```
-CMD --chroot cmd [args ...]
-CMD --jaildir cmd [args ...]
-CMD [--jexec] [--noclean] [--juser jail_username | --huser host_username] cmd [args ...]
-CMD --local cmd [args ...]
-CMD --local-jaildir cmd [args ...]
-CMD --local-rootdir cmd [args ...]
+CMD --chroot command [args ...]
+CMD --jaildir command [args ...]
+CMD [--jexec] [--noclean] [--juser username|--huser username] command
+        [args ...]
+CMD --local command [args ...]
+CMD --local-jaildir command [args ...]
+CMD --local-rootdir command [args ...]
 ```
 
-##### --chroot
+This instruction uses the AppJail tokenizer best described in `appjail-template(5)` to execute a string with `sh(1)` instructions. This instruction keeps the ", ', and \ characters in the string to better emulate the behavior of `sh(1)`.
 
-Use `appjail cmd chroot`.
-
-This parameter uses the jail directory as the chrooted directory.
-
-This does not provide isolation (except at the directory level).
-
-It is not recommended to use thinjails with this parameter.
-
-##### --jaildir
-
-Use `appjail cmd jaildir`.
-
-This parameter uses the directory where the jails are stored.
-
-This does not provide isolation.
-
-##### --jexec (default)
-
-Use `appjail cmd jexec`.
-
-`--noclean` correspond to `appjail cmd jexec -l`
-
-`--juser` correspond to `appjail cmd jexec -U`.
-
-`--huser` correspond to `appjail cmd jexec -u`.
-
-##### --local
-
-Use the current directory. The current directory used by Makejail may be different from the directory where `appjail makejail` was executed (see [INCLUDE](#include) for more details).
-
-This does not provide isolation.
-
-##### --local-jaildir
-
-Use `appjail cmd local -j`.
-
-This parameter uses the jail directory.
-
-This does not provide isolation.
-
-##### --local-rootdir
-
-Use `appjail cmd local -j`.
-
-This parameter uses the root directory of the jail.
-
-This does not provide isolation.
-
-#### Description
-
-This instruction uses the AppJail tokenizer to get a valid posix shell command. It has the responsability to escape harmful characters that can be executed on the host (although this assumption is not valid when using a parameter that executes the command on the host as can be seen in `Syntax`). The idea is that any errors arising from an invalid shell command will only occur on the jail.
-
-The `ARG` instruction can be used in conjunction with this instruction to pass variables. Internally, variables are passed using `env(1)` to the `sh(1)` subprocess that is created when entering the jail to execute the given command.
+Internally, `ARG` and `VAR` (it doesn't do this by default, but does it with one of its parameters) can create variables that are passed via environment variables to the `sh(1)` process.
 
 ```
 OPTION overwrite
@@ -180,9 +57,7 @@ ARG name=DtxdF
 CMD echo "Hello, ${name}"
 ```
 
-The above Makejail will display `Hello, DtxdF` unless you change the variable's value at runtime.
-
-This instruction has the advantage that it can execute virtually any posix shell command.
+This instruction has the advantage that it can execute virtually any shell command.
 
 ```
 CMD cd /usr/local/etc/opensearch/opensearch-security; for i in $(ls *.sample) ; do cp -p "$i" $(echo $i | sed "s|.sample||g"); done
@@ -190,152 +65,68 @@ CMD cd /usr/local/etc/opensearch/opensearch-security; for i in $(ls *.sample) ; 
 
 All of the above commands will be executed on the jail, not on the host, even the embedded shell commands.
 
-Remember that this command uses the AppJail tokenizer, so you cannot use an invalid (but accepted by `sh(1)`) shell command. For example, if you run `echo "\"` in a shell script, you will get the error `Syntax error: Unterminated quoted string`, but if you run it in a Makejail you will get `Tokenizer: ERROR [ret:-4, errno:0] <Invalid syntax (WDERRS).>`.
+Remember that this command uses the AppJail tokenizer, so you cannot use an invalid (but accepted by `sh(1)`) shell command. For example, if you run `echo "\"` in a shell script, you will get the error "*Syntax error: Unterminated quoted string*" but if you run it in a Makejail you will get "*Tokenizer: ERROR [ret:-4, errno:0] <Invalid syntax (WDERRS).\>.*"
 
-Feel free to use this command, but for more complex things use a shell script. It is recommended to separate complex things into simple things.
+`--chroot` is equivalent to `appjail-cmd(1)` `chroot`.
 
-#### Examples
+`--jaildir` is equivalent to `appjail-cmd(1)` `jaildir`.
 
-##### #1
+`--jexec` `--noclean` is equivalent to `appjail-cmd(1)` `jexec` `-l`.
+`--jexec` `--juser` is equivalent to `appjail-cmd(1)` `jexec` `-U`.
+`--jexec` `--huser` is equivalent to `appjail-cmd(1)` `jexec` `-u`.
 
-```
-CMD mkdir -p /usr/local/www/darkhttpd
-CMD echo "<h1>Hello, world!</h1>" > /usr/local/www/darkhttpd/index.html
-```
+`--local` runs a command from the host but using the local directory which may be different. See `INCLUDE` for more details.
 
-##### #2
+`--local-jaildir` is equivalent to `appjail-cmd(1)` `local` `-j`.
 
-```
-CMD --local-jaildir sysrc -f etc/rc.conf clear_tmp_X="NO"
-```
+`--local-rootdir` is equivalent to `appjail-cmd(1)` `local` `-r`.
 
 ### COPY
 
-#### Syntax
-
 ```
-COPY [--glob | --glob-left | --glob-right] [--verbose] [--jail jail] src [dst]
-```
-
-##### --glob
-
-Use the glob expression in the left and right corners of `src`.
-
-##### --glob-left
-
-Use the glob expression in the left corner of `src`.
-
-##### --glob-right
-
-Use the glob expression in the right corner of `src`.
-
-##### --verbose
-
-See `-v` in `cp(1)`.
-
-##### --jail
-
-Copy the file relative to a directory in a jail.
-
-##### src
-
-File to be copied.
-
-If a relative path is used, `appjail makejail` affects this. See [INCLUDE](#include) for more details.
-
-##### dst
-
-The path relative to the jail that is used as the file destination.
-
-`WORKDIR` affects this command.
-
-#### Description
-
-Copy a file from the host to the jail.
-
-#### Examples
-
-##### #1
-
-```
-COPY --verbose ${index} /usr/local/www/nginx/index.html
+COPY [--glob|--glob-left|--glob-right] [--verbose] [--jail jail] source
+        [destination]
 ```
 
-##### #2
+Copy a file from the host to the jail or destination, a path relative to the jail directory.
 
-```
-# Will copy /usr/local/lib/{libtag.so,libtag.so.1,libtag.so.1.19.0}
-COPY --verbose --jail "${gonic_builder}" --glob-right /usr/local/lib/libtag.so /usr/local/lib
-```
+`WORKDIR` can affect this instruction.
+
+Use `--jail` to copy source from another jail.
+
+Using `--glob`, `--glob-left`, `--glob-right` is equivalent to `*source*`, `*source` and `source*`, but you can't use such expressions in `source`.
+
+Increase the verbosity using `--verbose`.
+
+Note that this instruction copies the file or directory as is, that is, metadata such as file mode, uid, gid, etc., are preserved.
 
 ### DESTROY
-
-#### Syntax
 
 ```
 DESTROY [--force] [--with-all-dependents] jail
 ```
 
-##### --force
+Stop and destroy <ins>jail</ins>.
 
-See `-f` in `appjail jail destroy`.
+`--force` is equivalent to `appjail-jail(1)` `destroy` `-f`.
 
-##### --with-all-dependents
-
-See `-R` in `appjail jail destroy`.
-
-#### Description
-
-Stops and destroys a jail.
-
-#### Examples
-
-```
-DESTROY builder
-```
+`--with-all-dependents` is equivalent to `appjail-jail(1)` `destroy` `-R`.
 
 ### DEVICE
 
-#### Syntax
-
 ```
-DEVICE rulespec
+DEVICE rulespec ...
 ```
 
-#### Description
-
-Add a DEVFS rule.
-
-#### Examples
-
-```
-DEVICE include 1
-DEVICE include 2
-DEVICE include 3
-DEVICE path fuse unhide
-DEVICE path zfs unhide
-DEVICE path 'dsp*' unhide
-DEVICE path 'mixer*' unhide
-DEVICE path bpf unhide
-```
+Apply (see `appjail-devfs(1)` `apply`) and `add` (see `appjail-devfs(1)` `set`) a new DEVFS rule.
 
 ### ENTRYPOINT
 
-#### Syntax
-
 ```
-ENTRYPOINT entrypoint
+ENTRYPOINT program
 ```
 
-##### entrypoint
-
-The program and, optionally, its arguments.
-
-#### Description
-
-Use `RUN` as arguments to `ENTRYPOINT`.
-
-#### Examples
+When running a program using `RUN`, the program specified by this instruction is used implicitly, for example:
 
 ```
 ENTRYPOINT python3.10
@@ -344,236 +135,90 @@ RUN script.py
 
 ### ENV
 
-#### Syntax
-
 ```
 ENV name[=value]
 ```
 
-#### Description
-
-Environment variables to be used by the `RUN` command.
-
-We can pass environment variables from the command line using the `-V` parameter supported by `appjail apply`, `appjail makejail`, `appjail start`, `appjail stop` and `appjail run`.
-
-#### Examples
-
-```
-ENV TOKEN=bba06278ca32777dc3724d42fe6fd3d9
-```
+Environment variables used by `RUN`. Additional environment variables can be passed using the `-V` parameter supported by `appjail-apply(1)`, `appjail-makejail(1)`, `appjail-start(1)`, `appjail-stop(1)` and `appjail-run(1)`.
 
 ### EXEC
 
-#### Syntax
-
 ```
-EXEC [--continue-with-errors] [--verbose] [[--after-include include_file] ...] [[--arg parameter[=value]] ...] [[--before-include include_file] ...] [[--build-arg arg] ...] [[--option option] ...] --file makejail --name jail
-```
-
-##### --continue-with-errors
-
-See `-e` in `appjail makejail`.
-
-##### --verbose
-
-See `-v` in `appjail makejail`.
-
-##### --after-include
-
-See `-a` in `appjail makejail`.
-
-Global instructions can be used using the global name created by `GLOBAL`. See [GLOBAL](#global) for details.
-
-##### --arg
-
-Sets the value of a parameter to the Makejail to be executed.
-
-##### --before-include
-
-See `-B` in `appjail makejail`.
-
-Global instructions can be used using the global name created by `GLOBAL`. See [GLOBAL](#global) for details.
-
-##### --build-arg
-
-See `-b` in `appjail makejail`.
-
-##### --option
-
-See `-o` in `appjail makejail`.
-
-##### --file
-
-See `-f` in `appjail makejail`.
-
-Global instructions can be used using the global name created by `GLOBAL`. See [GLOBAL](#global) for details.
-
-##### --name
-
-See `-j` in `appjail makejail`.
-
-#### Description
-
-Execute a Makejail.
-
-#### Examples
-
-##### #1
-
-```
-EXEC --file gh+AppJail-makejails/hello --name hello
+EXEC [--continue-with-errors] [--verbose] [[--after-include makejail]
+        ...] [[--arg parameter[=value]] ...] [[--before-include makejail]
+        ...] [[--build-arg parameter[=value]] ...] [[--option option] ...]
+        --file makejail --name name
 ```
 
-##### #2
+Run a Makejail.
+
+`--continue-with-errors` is equivalent to `appjail-makejail(1)` `-e`.
+
+`--verbose` is equivalent to `appjail-makejail(1)` `-v`.
+
+`--after-include` is equivalent to `appjail-makejail(1)` `-a`.
+
+`--arg` is equivalent to passing arguments as you normally do from command-line but without double dashes.
+
+`--before-include` is equivalent to `appjail-makejail(1)` `-B`.
+
+`--option` is equivalent to `appjail-makejail(1)` `-o`.
+
+`--file` is equivalent to `appjail-makejail(1)` `-f`.
+
+`--name` is equivalent to `appjail-makejail(1)` `-j`.
+
+`--file`, `--after-include` and `--before-include` can use a temporary Makejail defined by `GLOBAL`.
+
+### FROM
 
 ```
-EXEC --file build.makejail --name builder --arg "cflags=-O2 -pipe" --arg ldflags=-lm
+FROM [--ajspec name] [--entrypoint [entrypoint|none]] [--platform
+        platform] image[:tag]
 ```
 
-##### #3
+Import an image to create a jail.
 
-```
-EXEC --before-include network.makejail \
-     --file other.makejail \
-     --name goappb \
-     --arg network=development
-```
+`--ajspec` is equivalent to `appjail-image(1)` `import` `-N`.
 
-### FROM (build)
+If `--entrypoint` is not specified, this instruction does what `IMAGE_ENTRYPOINT` describes. If set to `none`, it is assumed that the image is currently installed, so this instruction will not attempt to download it. See `appjail-image(1)` `import` for more details.
 
-#### Syntax
+`--platform` is equivalent to `appjail-image(1)` `import` `-a`.
 
-```
-FROM [--ajspec ajspec_name] [--entrypoint entrypoint|none] [--platform platform] image[:tag]
-```
+<ins>image</ins> is equivalent to `appjail-image(1)` `import` `-n`.
 
-##### --ajspec
-
-See `-N` in `appjail image import`.
-
-##### --entrypoint
-
-See `appjail image import`.
-
-When no entry point is set, `IMAGE_ENTRYPOINT` (default: `gh+AppJail-makejails`) is concatenated with `image`.
-
-`none` is special because it indicates that the image should not be downloaded, so it is assumed that it is already installed.
-
-##### --platform
-
-See `-a` in `appjail image import` and `appjail image jail`.
-
-##### image
-
-Image name.
-
-##### tag
-
-Tag to be used. If not specified, `IMAGE_TAG` (default: `latest`) is used instead.
-
-#### Description
-
-Use an image as the jail.
-
-#### Examples
-
-```
-FROM --entrypoint gh+AppJail-makejails/nginx nginx:13.2
-# Equivalent:
-FROM nginx:13.2
-```
+<ins>tag</ins> is equivalent to `appjail-image(1)` `import` `-t`. If not defined, the tag specified by the `IMAGE_TAG` parameter is used.
 
 ### GLOBAL
-
-#### Syntax
 
 ```
 GLOBAL :name: [instruction [args ...]]
 ```
 
-##### name
+Create a temporary Makejail that can be executed by `EXEC`. This instruction is intended for those who want to build, from another jail, an application that generates an executable that is copied by the main Makejail and used by the main jail, although this instruction can be used for much more, for example deploying multiple jails whose services are used by the main jail. However, nothing prevents you from creating another Makejail file and configuring the `EXEC` instruction to use it.
 
-Global name.
-
-##### instruction
-
-Makejail instruction and, if required, with its arguments.
-
-#### Description
-
-Create a Makejail as a temporary file that can be used by `EXEC`. The intention is to deploy multiple jails using a single Makejail.
-
-Note that since the Makejail is a temporary file, any reference to a file is relative to that directory since `INCLUDE` works this way (see [INCLUDE](#include) for details).
+Note that since the Makejail generated by this instruction is a temporary file, any reference to a file is relative to that directory since `INCLUDE` works this way.
 
 ```
-# Correct
+### Correct
 GLOBAL :darkhttpd: INCLUDE gh+AppJail-makejails/darkhttpd
 GLOBAL :darkhttpd: COPY --verbose "${APPJAIL_PWD}/usr/" usr
+```
 
-# Wrong
+```
+### Wrong
 GLOBAL :darkhttpd: INCLUDE gh+AppJail-makejails/darkhttpd
 GLOBAL :darkhttpd: COPY --verbose usr
 ```
 
-#### Examples
-
-```
-# Local options.
-OPTION start
-OPTION overwrite=force
-
-# Global options.
-GLOBAL :network: OPTION virtualnet=:${APPJAIL_JAILNAME} default
-GLOBAL :network: OPTION nat
-
-# Web servers.
-RAW for jail in nginx darkhttpd; do
-    EXEC --after-include :network: \
-         --file gh+AppJail-makejails/${jail} \
-         --name ${jail}
-RAW done
-
-# Command executed by this jail.
-CMD echo "Done."
-```
-
 ### INCLUDE
 
-#### Syntax
-
-```
-INCLUDE [method+]path [args ...]
-```
-
-##### method
-
-The method that `appjail makejail` will use to get the Makejail file.
-
-##### path
-
-Path to the Makejail file, but this varies depending on the method used.
-
-##### args
-
-Optional arguments for the method used.
-
-#### Description
-
-Includes a Makejail file.
-
-`INCLUDE` removes empty lines, comments and leading spaces.
-
-`INCLUDE` is the first command executed in Makejail when using `appjail makejail -f`.
-
-`INCLUDE` changes the current directory to the directory where Makejail resides if they differ. This allows Makejail to access files relative to its directory.
-
-`INCLUDE` also restores the current stage after reading the current Makejail if the previous stage differs.
-
-After the above processes, `INCLUDE` will include all Makejails in a single Makejail.
+This is the first instruction executed, which includes a Makejail file, removes empty lines and comments, changes the current directory to the directory where the included Makejail is located, and restores the previous stage after reading the last included Makejail. After doing all this, internally a single Makejail file will be written with all the instructions from all the other Makejails (except the `INCLUDE` instructions, of course) which is finally executed.
 
 The following Makejails ilustrate the above description:
 
-**a.makejail**
+**a.makejail**:
+
 ```
 OPTION start
 OPTION overwrite
@@ -584,13 +229,14 @@ CMD echo "I'm a in the build stage."
 ```
 
 **b.makejail**:
+
 ```
 STAGE cmd
 
 CMD echo "I'm b in the cmd stage."
 ```
 
-The previous Makejails will be a single Makejail:
+The resulting Makejail will be:
 
 ```
 OPTION start
@@ -604,6 +250,7 @@ CMD echo "I'm a in the build stage."
 To illustrate how `INCLUDE` changes the current directory, the following examples are useful:
 
 **A/Makejail**:
+
 ```
 OPTION start
 OPTION overwrite
@@ -616,6 +263,7 @@ CMD echo "I'm A in the build stage again."
 ```
 
 **B/Makejail**:
+
 ```
 STAGE cmd
 
@@ -625,6 +273,7 @@ INCLUDE ../C/Makejail
 ```
 
 **C/Makejail**:
+
 ```
 STAGE build
 
@@ -640,15 +289,15 @@ CMD echo "I'm C in the start stage."
 After including all Makejails in a single Makejail:
 
 ```
-RAW cd -- "/tmp/n/A" # Makejail: /tmp/n/A/Makejail
+RAW cd -- "/tmp/n/A" ### Makejail: /tmp/n/A/Makejail
 OPTION start
 OPTION overwrite
 CMD echo "I'm A in the build stage."
-RAW cd -- "/tmp/n/B" # Makejail: /tmp/n/B/Makejail
+RAW cd -- "/tmp/n/B" ### Makejail: /tmp/n/B/Makejail
 STAGE cmd
 CMD echo "I'm B in the cmd stage."
 STAGE build
-RAW cd -- "/tmp/n/C" # Makejail: /tmp/n/C/Makejail
+RAW cd -- "/tmp/n/C" ### Makejail: /tmp/n/C/Makejail
 CMD echo "I'm C in the build stage."
 CMD mkdir -p /usr/local/etc
 COPY config.conf /usr/local/etc
@@ -657,13 +306,14 @@ STAGE start
 CMD echo "I'm C in the stage stage."
 STAGE cmd
 STAGE build
-RAW cd -- "/tmp/n/A" # Makejail: /tmp/n/A/Makejail
+RAW cd -- "/tmp/n/A" ### Makejail: /tmp/n/A/Makejail
 CMD echo "I'm A in the build stage again."
 ```
 
-Some `STAGE` commands seem to be uncessary when changing a stage after another stage. The following example illustrates why this is necessary:
+Some `STAGE` instructions seem unnecessary, but are relevant in some cases, for example:
 
 **A/Makejail**:
+
 ```
 OPTION overwrite
 OPTION start
@@ -676,6 +326,7 @@ CMD echo "I'm A after include B."
 ```
 
 **B/Makejail**:
+
 ```
 STAGE start
 
@@ -685,634 +336,270 @@ CMD echo "I'm B in the start stage."
 The resulting Makejail will be as follows:
 
 ```
-RAW cd -- "/tmp/c/A" # Makejail: /tmp/c/A/Makejail
+RAW cd -- "/tmp/c/A" ### Makejail: /tmp/c/A/Makejail
 OPTION overwrite
 OPTION start
 CMD echo "I'm A before include B."
-RAW cd -- "/tmp/c/B" # Makejail: /tmp/c/B/Makejail
+RAW cd -- "/tmp/c/B" ### Makejail: /tmp/c/B/Makejail
 STAGE start
 CMD echo "I'm B in the start stage."
 STAGE build
-RAW cd -- "/tmp/c/A" # Makejail: /tmp/c/A/Makejail
+RAW cd -- "/tmp/c/A" ### Makejail: /tmp/c/A/Makejail
 CMD echo "I'm A after include B."
 ```
 
-In the above example, stage restoration is very important in order not to execute a command in a different stage than the one we intend.
+The previous example illustrates the importance of restoring the stage so as not to execute instructions at a different stage than intended.
 
-`INCLUDE` can obtain the Makejail file using different methods as mentioned below.
+A Makejail can be included in several ways, depending on the <ins>method</ins> used:
 
-##### file - (syntax: file+makejail_file)
+**file**+<ins>makejail</ins>
 
-Loads the Makejail from the local file system.
+Include a Makejail file from the local file system. This is the default method.
 
-This is the default method.
+Note that you must set this method explicitly when the pathname has a `+` sign.
 
-If the file name contains the `+` sign, you must explicitly use the method.
+**cmd**+<ins>command</ins> [<ins>args</ins> ...]
 
-##### cmd - (syntax: cmd+command [args ...])
+Use the output of a command as the Makejail file.
 
-Execute a command and use its output (stdout) as the Makejail file.
+**git**+<ins>url</ins> [**--baseurl** <ins>url</ins>] [**--cachedir**] [**--file** <ins>makejail</ins>] [**--global**|**--local** [**--cachedir** <ins>directory</ins>|**--tmp**]
 
-##### git - (syntax: git+url [--baseurl url] [--file makejail_filename] [--global | --local [--cachedir directory] | --tmp])
+Clone a `git(1)` repository. With `--global`, the `git(1)` repository is cloned to the global cache directory defined by `GLOBAL_GIT_CACHEDIR`, with `--local`, the `git(1)` repository is cloned to the local cache directory defined by the `--cachedir` parameter, and with `--tmp` the `git(1)` repository is cloned as a temporary directory.
 
-Clone a `git(1)` repository in the global cache directory (`GLOBAL_GIT_CACHEDIR`) or in the local cache directory specified with `--cachedir` (default: `.makejail_local`) to get the Makejail named `makejail_filename` (default: `Makejail`). Using the `--tmp` parameter uses a temporary directory as the cache directory, so the `git(1)` repository will be cloned each time.
+After the `git(1)` repository is cloned, the Makejail specified by `--file`, which by default is Makejail, is executed.
 
-The `--basedir` parameter is used as a URL prefix and is intended for other git-like methods, such as those mentioned in the following sections.
+`--basedir` is intended for other git-like methods.
 
-`devel/git` must be installed before using this method.
+This instruction requires that `devel/git` be installed before use.
 
-##### fetch - (syntax: url)
+**fetch**+<ins>url</ins>
 
-Use `MAKEJAIL_FETCH_CMD` to make an HTTP or FTP request to get the Makejail file.
+Use the program specified by `MAKEJAIL_FETCH_CMD` to download the Makejail file.
 
-##### gh, github - (syntax: USERNAME/REPONAME)
+**gh**+<ins>username</ins>/<ins>reponame</ins>
 
-Wrapper of the `git` method setting `--baseurl` to `https://github.com/`.
+**github**+<ins>username</ins>/<ins>reponame</ins>
 
-##### gh-ssh, github-ssh - (syntax: USERNAME/REPONAME)
+Wrapper for the `git` method but with `--basedir` set to `https://github.com/`.
 
-Wrapper of the `git` method setting `--baseurl` to `git@github.com:`.
+**gh-ssh**+<ins>username</ins>/<ins>reponame</ins>
 
-##### gl, gitlab - (syntax: USERNAME/REPONAME)
+**github-ssh**+<ins>username</ins>/<ins>reponame</ins>
 
-Wrapper of the `git` method setting `--baseurl` to `https://gitlab.com/`.
+Wrapper for the `git` method but with `--basedir` set to `git@github.com:`.
 
-##### gl-ssh, gitlab-ssh - (syntax: USERNAME/REPONAME)
+**gl**+<ins>username</ins>/<ins>reponame</ins>
 
-Wrapper of the `git` method setting `--baseurl` to `git@gitlab.com:`.
+**gitlab**+<ins>username</ins>/<ins>reponame</ins>
 
-#### Examples
+Wrapper for the `git` method but with `--basedir` set to `https://gitlab.com/`.
 
-##### #1
+**gl-ssh**+<ins>username</ins>/<ins>reponame</ins>
 
-```
-# Identical.
-INCLUDE /tmp/Makejail
-INCLUDE file+/tmp/Makejail
-```
+**gitlab-ssh**+<ins>username</ins>/<ins>reponame</ins>
 
-##### #2
+Wrapper for the `git` method but with `--basedir` set to `git@gitlab:`.
+
+### LABEL
 
 ```
-# Since there is a plus sign in the file name, we must use
-# the method explicitly.
-INCLUDE file+/home/op/tmp/xeyes+debian-bullseye.makejail
+LABEL key=value
 ```
 
-##### #3
-
-```
-INCLUDE gh+AppJail-makejails/python
-```
-
-##### #4
-
-```
-# Identical, but it is recommend to use fetch to honor
-# MAKEJAIL_FETCH_CMD.
-INCLUDE fetch+https://example.org/nginx-makejail
-INCLUDE cmd+fetch -o - https://example.org/nginx-makejail
-```
+Add a new label to the jail.
 
 ### MOUNT
 
-#### Syntax
-
 ```
-MOUNT --nopersist device mountpoint [type] [options] [dump] [pass]
-MOUNT [--nomount] [--nro [auto | nro]] device mountpoint [type] [options] [dump] [dump]
-```
-
-##### --nopersist
-
-By default, `MOUNT` uses `appjail fstab`, this option uses `mount(8)` instead.
-
-##### --nomount
-
-By default, `appjail fstab` fields are compiled and mounted, this option disables it.
-
-If you use `MOUNT` serveral times, it is recommended to use this option except the last time it is called at the same stage.
-
-##### device
-
-Device to be mounted.
-
-##### mountpoint
-
-Mountpoint relative to the jail directory.
-
-##### type
-
-File system type.
-
-The default is `nullfs`.
-
-##### options
-
-Options for `mount(8)`.
-
-The default is `rw`.
-
-##### dump
-
-This field is used for these file systems by the `dump(8)` command to determine which file systems need to be dumped. See `fstab(5)` for more details.
-
-The default is `0`.
-
-##### pass
-
-This field is used by the `fsck(8)` and `quotacheck(8)` programs to determine the order in which file system and quota checks are done at reboot time. See `fstab(5)` for more details.
-
-The default is `0`.
-
-#### Description
-
-Mount a device inside the jail.
-
-The AppJail tokenizer allows you to use quoted strings to use spaces.
-
-#### Examples
-
-##### #1
-
-```
-MOUNT /usr/ports /usr/ports
+MOUNT --nopersist device mountpoint [type]
+        [options] [dump] [pass]
+MOUNT [--nomount] [--nro [auto|nro]] device mountpoint [type] [options]
+        [dump] [pass]
 ```
 
-##### #2
+Mount file systems inside the jail.
 
-```
-MOUNT "/tmp/with spaces" /tmp/n
-```
+This instruction simulates an `fstab(5)` entry as you can see, but unlike it only <ins>device</ins> and <ins>mountpoint</ins> are required, and the others, <ins>type</ins> (default: **nullfs**), <ins>options</ins> (default: **rw**), <ins>dump</ins> (default: **0**) and <ins>pass</ins> (default: **0**) are optional.
 
-##### #3
+If `--nopersist` is specified, `mount(8)` is used instead of `appjail-fstab(1)`, that is, the mount point will not persist on reboot and must be unmounted before the jail is stopped.
 
-```
-MOUNT --nomount /usr/ports /usr/local/www
-MOUNT --nomount /usr/local/www /usr/local/www
-MOUNT /tmp /tmp
-```
+By default, `appjail-fstab(1)` entries are compiled and mounted unless `--nomount` is specified. This option is recommended when you specify multiple entries: you can gain performance by specifying this option except for the last entry.
+
+You can specify the identifier using `--nro`, but it is recommended to keep it as is, that is, `auto`, which is the default value.
 
 ### PKG
 
-#### Syntax
-
 ```
-PKG [[--chroot | --jexec [--jail] | --local]] package ...
-PKG [[--chroot | --jexec [--jail] | --local]] --remove package ...
-PKG [[--chroot | --jexec [--jail] | --local]] --autoremove
-PKG [[--chroot | --jexec [--jail] | --local]] --clean
-PKG [[--chroot | --jexec [--jail] | --local]] --update
-PKG [[--chroot | --jexec [--jail] | --local]] --upgrade
+PKG [--chroot|--jexec [--jail]|--local] package ...
+PKG [--chroot|--jexec [--jail]|--local] --remove package ...
+PKG [--chroot|--jexec [--jail]|--local] --autoremove
+PKG [--chroot|--jexec [--jail]|--local] --clean
+PKG [--chroot|--jexec [--jail]|--local] --update
+PKG [--chroot|--jexec [--jail]|--local] --upgrade
 ```
 
-##### --chroot
+Manipulate packages.
 
-Use `pkg(8)` in the jail directory as the new root directory.
+`--chroot` is equivalent to `appjail-pkg(1)` `chroot`. This option can only be used for thick and thin jails, but the latter requires the jail to be started.
 
-This option can be used for thinjails and thickjails. For thinjails it is necessary that the jail is started.
+`--jexec` (**default**) is equivalent to `appjail-pkg(1)` `jail`. `--jail` is equivalent to `appjail-pkg(1)` `jail` `-j`.
 
-##### --jexec
+`--local`, run `pkg(8)` on the host instead of inside the jail.
 
-`pkg(8)` will execute in the given jail.
+`--remove`, removes one or more packages instead of installing them.
 
-`--jail` is to bootstrap `pkg(8)` inside the jail before use.
+`--autoremove`, removes orphaned or unused packages.
 
-##### --local
+`--clean`, clean the local cache of fetched remote packages.
 
-Run the host's package manager.
+`--update`, update the package list.
 
-##### --remove
-
-Remove one or more packages instead of installing them.
-
-##### --autoremove
-
-Remove orphan or unused packages.
-
-##### --clean
-
-Clean the local cache of fetched remote packages.
-
-##### --update
-
-Update the list of packages.
-
-##### --upgrade
-
-Perform upgrades of package software distributions.
-
-##### package
-
-Package name.
-
-Can be used several times.
-
-#### Description
-
-Use `pkg-install(8)` to install a package.
-
-#### Examples
-
-```
-PKG nginx
-```
+`--upgrade`, perform upgrades of package software distributions.
 
 ### RAW
-
-#### Syntax
 
 ```
 RAW [code]
 ```
 
-#### Description
-
-Write `sh(1)` code. Useful for conditionals, loops and anything you can to do with `sh(1)`.
-
-#### Examples
-
-##### #1
-
-```
-RAW variable="value"
-```
-
-##### #2
-
-```
-RAW if [ "${use_php}" != 0 ]; then
-    PKG php
-RAW fi
-```
+Remember that an **InitScript** is `sh(1)` code and is generated by Makejails, so in many cases it is very useful for writing code that is processed as is, such as conditionals, loops, etc., however some instructions cannot be used for these purposes. See [Non-Conditional Instructions](#non-conditional-instructions).
 
 ### REPLACE
 
-#### Syntax
-
 ```
-REPLACE file old [new] [output]
+REPLACE file keyword [value] [output]
 ```
 
-##### file
-
-File containing the keywords to be replaced.
-
-##### old
-
-The keyword to be replaced.
-
-##### new
-
-Replaces the given keyword using this value. If not value is given, an empty value will be used.
-
-##### output
-
-Instead of replacing `file`, use `output` as the new file with the replaced keywords.
-
-#### Description
-
-Replace a keyword (e.g.: `%{VARIABLE}`) for a specific value in the given file.
-
-To use the literal keyword use the `%` twice. For example, the `%%{VARIABLE}` keyword will convert to `%{VARIABLE}`.
-
-#### Examples
-
-```
-REPLACE /usr/local/www/wordpress/wp-config-appjail.php DB_NAME wordpress /usr/local/www/wordpress/wp-config.php
-```
+Replace a given <ins>keyword</ins> (without being enclosed in **%{** and **}**) with a <ins>value</ins> (or empty, if not defined) in a <ins>file</ins>. Keywords begin with the **%** character and then the keyword name enclosed in curly braces. Use **%** twice to escape, for example **%%{KEYWORD}** will be converted to **%{KEYWORD}**, but will not be replaced by any value. A different file can be used as <ins>output</ins> for the replaced keywords.
 
 ### RUN
 
-#### Syntax
-
 ```
-RUN [--maintain-env] [--noclean] [--juser jail_username | --huser host_username] [cmd [args ...]]
-```
-
-!!! note
-
-    The arguments have the same meaning as `CMD --jexec`.
-
-##### --maintain-env
-
-Leave the environment unchanged instead of simulating a full login.
-
-#### Description
-
-Execute a program.
-
-Unlike `CMD`, `RUN` does not execute shell code. `RUN` only passes its arguments to `ENTRYPOINT` with a literal meaning.
-
-`RUN` does not use shell variables like arguments (see [ARG](#arg)) or variables (see [VAR](#var)). `RUN` uses environment variables created by the `ENV` command.
-
-`RUN` will be executed as the user specified by the `USER` command.
-
-`RUN` will execute the command in the directory specified by the `WORKDIR` command.
-
-`RUN` cannot run programs in interactive mode like `python`. Use `CMD` for this.
-
-#### Examples
-
-##### #1
-
-```
-# Prints the  `Hello, world! > /tmp/hello.txt` message instead of writing it to the `/tmp/hello.txt` message.
-RUN echo "Hello, world!" > /tmp/hello.txt
+RUN [--maintain-env] [--noclean] [--juser username|--huser username]
+        [command [args ...]]
 ```
 
-##### #2
+The `RUN` instruction executes a program, but unlike `CMD`, it cannot execute `sh(1)` code, it cannot execute interactive programs like Python, it cannot use variables created by `ARG` or `VAR` but it can use environment variables created by `ENV`, and instructions such as `USER`, `WORKDIR`, and `ENTRYPOINT` affect this instruction.
 
-```
-RUN python3.9 app.py
-```
+If `--maintain-env` is specified, leave the environment unchanged instead of simulating a full login.
+
+The rest of the parameters have the same meaning as `CMD` `--jexec`.
 
 ### SERVICE
 
-#### Syntax
-
 ```
-SERVICE service_args
+SERVICE args ...
 ```
 
-#### Description
-
-Manipulate services in the jail.
-
-#### Examples
-
-```
-SERVICE nginx nginx oneenable
-SERVICE nginx nginx start
-```
+Manipulate services. See `appjail-service(1)`.
 
 ### SET
-
-#### Syntax
 
 ```
 SET [--mark] [--column column] [--row row] parameter[=value]
 ```
 
-##### --mark
+Use `appjail-config(1)` to edit the template used by the jail.
 
-Mark a parameter as required. See [Templates](../templates.md) for more details.
+If `--mark` is specified, the given parameter is marked as required.
 
-##### --column, --row
-
-The column and the row to edit. See [Templates](../templates.md) for more details.
-
-#### Description
-
-Use `appjail-config` to edit the current template.
-
-#### Examples
-
-```
-# A basic linux template is as follows:
-SET exec.start=/bin/true
-SET exec.stop=/bin/true
-SET persist
-```
+`--column` and `--row` can be specified to edit a specific parameter; However, if `--column` is set to a number greater than **1**, `appjail-config(1)` `setColumn` is used instead of `appjail-config(1)` `set`.
 
 ### STAGE
-
-#### Syntax
 
 ```
 STAGE stage
 ```
 
-#### Description
-
-Change the current stage.
-
-The default stage is `build`.
-
-#### Examples
-
-##### #1
-
-```
-STAGE start
-```
-
-##### #2
-
-```
-STAGE custom:python
-```
+Change the current stage. The default stage is **build**.
 
 ### SYSRC
 
-#### Syntax
-
 ```
-SYSRC [--jail | --local] name[[+|-]=value] ...
+SYSRC [--jail|--local] name[[+|-]=value] ...
 ```
 
-##### --jail
+Safely edit system rc files within a jail.
 
-Use `jexec(8)` to edit the rc file within the jail.
+`--jail` is equivalent to `appjail-sysrc(1)` `jail`.
 
-This is the default.
-
-##### --local
-
-Use the jail directory as the new root directory to edit the rc file.
-
-Use this parameter for thickjails, it will probably not work in a thinjail.
-
-#### Description
-
-Use `sysrc(8)` to edit rc files of the jail.
-
-#### Examples
-
-```
-SYSRC nginx nginx_enable="YES"
-```
+`--local` is equivalent to `appjail-sysrc(1)` `local`. It is only recommended to use this parameter with thick jails instead of thin jails, as it may not work correctly with the latter.
 
 ### UMOUNT
-
-#### Syntax
 
 ```
 UMOUNT mountpoint
 ```
 
-#### Description
-
 Unmount a mounted file system.
 
-This command does not use the AppJail tokenizer, so there is no need to use quoted strings.
-
-#### Examples
-
-```
-UMOUNT /usr/local/www/darkhttpd
-```
-
 ### USER
-
-#### Syntax
 
 ```
 USER user
 ```
 
-#### Description
+The user to run `RUN` as.
 
-The user that the `RUN` command will use to execute a command as the given user.
-
-#### Examples
-
-```
-USER xclock
-```
+Unlike other instructions, this one cannot use shell variables.
 
 ### VAR
 
-#### Syntax
-
 ```
-VAR [--make-arg-env] [--noexpand] name[=default_value]
+VAR [--make-arg-env] [--noexpand] name[=default-value]
 ```
-
-##### --make-arg-env
-
-Create an environment variable to be passed to `CMD`. See [CMD](#cmd) for details.
-
-##### --noexpand
-
-When this option is used, the `$` sign is escaped. Useful for `build arguments`.
-
-#### Description
 
 Create or set a variable.
 
-#### Examples
+If `--make-arg-env` is specified, the variable is available to `CMD`.
 
-```
-VAR wwwdir=/usr/local/www
-```
+If `--noexpand` the **$** character is escaped. Useful for build arguments.
 
 ### WORKDIR
 
-#### Syntax
-
 ```
-WORKDIR workdir
+WORKDIR directory
 ```
 
-#### Description
+Create a new directory and use it as the working directory by `ADD`, `COPY`, and `RUN`.
 
-Creates a new directory and uses it as a working directory for some commands such as `ADD`, `COPY` and `RUN`.
+Unlike other instructions, this one cannot use shell variables.
 
-#### Examples
-
-```
-WORKDIR /app
-COPY app.py
-RUN python3.9 app.py
-```
-
-### LOGIN (build)
-
-#### Syntax
+### LOGIN
 
 ```
 LOGIN [--user username]
 ```
 
-##### --user
+Log into the jail.
 
-The username to try to log in.
+`--user` is equivalent to `appjail-login(1)` `-u`.
 
-The default user is `root`.
-
-#### Description
-
-Use `appjail login` to log into the jail.
-
-#### Examples
-
-```
-LOGIN
-```
-
-### OPTION (build)
-
-#### Syntax
+### OPTION
 
 ```
 OPTION option
 ```
 
-#### Description
+`appjail-quick(1)`'s options.
 
-Options to be used in the `appjail quick` command.
+You don't need the option value enclosed in double quotes even when it has spaces.
 
-#### Examples
-
-```
-OPTION virtualnet=web:nginx default
-OPTION expose=80
-OPTION limits=vmemoryuse:deny=512m
-OPTION nat
-OPTION overwrite
-OPTION start
-```
-
-### RESTART (build)
-
-#### Syntax
+### RESTART
 
 ```
 RESTART
 ```
 
-#### Description
+Restart the jail using `appjail-restart(1)`.
 
-Use `appjail restart` to restart the jail.
-
-#### Examples
-
-```
-RESTART
-```
-
-### START (build)
-
-#### Syntax
+### START
 
 ```
 START
 ```
 
-#### Description
-
-Use `appjail start` to start the jail.
-
-#### Examples
-
-```
-START
-```
-
-### STOP (build)
-
-#### Syntax
-
-```
-STOP
-```
-
-#### Description
-
-Use `appjail stop` to stop the jail.
-
-#### Examples
+### STOP
 
 ```
 STOP
@@ -1320,34 +607,63 @@ STOP
 
 ### VOLUME
 
-#### Syntax
-
 ```
-VOLUME [--group gid] [--mountpoint mountpoint] [--owner uid] [--perm mode] [--type fs_type] volume
+VOLUME [--group gid] [--mountpoint mountpoint] [--owner owner] [--perm
+        mode] [--type type] volume
 ```
 
-##### --group
+Create a new volume.
 
-Changes the group ID of the specified volume.
+`--group` is equivalent to `appjail-volume(1)` `add` `-g`.
 
-##### --mountpoint
+`--mountpoint` is equivalent to `appjail-volume(1)` `add` `-m`.
 
-Path within the jail to mount the specified volume. Default is `{VOLUMESDIR}/{volume_name}`.
+`--owner` is equivalent to `appjail-volume(1)` `add` `-o`.
 
-##### --owner
+`--perm` is equivalent to `appjail-volume(1)` `add` `-p`.
 
-Changes the user ID of the specified volume.
+`--type` is equivalent to `appjail-volume(1)` `add` `-t`.
 
-##### --perm
+## Non-Conditional Instructions
 
-Changes the file mode of the specified volume.
+The following instructions cannot be used conditionally because they change the behavior of the resulting **InitScript** or **BuildScript** and do not generate code, or generate code that can only be used on specific lines:
 
-##### --type
+* `ARG`
+* `CLEAR`
+* `ENTRYPOINT`
+* `ENV`
+* `GLOBAL`
+* `INCLUDE`
+* `STAGE`
+* `USER`
+* `VAR`: This instruction generates code that can be used conditionally, but if you use `--make-arg-env`, there is a side effect: even if you use this instruction conditionally, the environment variables will be available to `CMD`.
+* `OPTION`
 
-File system type. Valid are `nullfs` and `<pseudofs>`.
+## Instructions that do not use the Tokenizer
 
-#### Examples
+The following instructions do not use the tokenizer, so they are parsed using their own methods:
 
-```
-VOLUME db
-```
+* `ARG`
+* `ENV`
+* `ENTRYPOINT`
+* `GLOBAL`
+* `RAW`
+* `USER`
+* `UMOUNT`
+* `WORKDIR`
+* `OPTION`
+
+## Build Stage Instructions
+
+The following instructions are valid only in the **build** stage:
+
+* `FROM`
+* `LOGIN`
+* `OPTION`
+* `RESTART`
+* `START`
+* `STOP`
+
+## Environment
+
+* `APPJAIL_PWD`: `appjail-makejail(1)`, when processing the `INCLUDE` instruction, changes the current directory, so `PWD` does not reflect the current directory. Only available in the **build** stage.

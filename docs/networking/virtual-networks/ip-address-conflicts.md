@@ -2,9 +2,9 @@ There are some problems when using the installation methods described above and 
 
 !!! warning
 
-    The problems described here are when using `appjail jail` to create a jail using
+    The problems described here are when using `appjail-jail(1)` to create a jail using
     the installation methods described in previous sections, but don't worry when
-    using `appjail quick` because this command forcibly reserves an IP address.
+    using `appjail-quick(1)` because this command forcibly reserves an IP address.
 
 ```sh
 appjail quick origin \
@@ -16,7 +16,7 @@ appjail quick origin \
 appjail jail create -I clone+jail=origin@snap1 dup
 ```
 
-`appjail jail list` shows the problem:
+`appjail-jail(1)` `list` shows the problem:
 
 ```console
 # appjail jail list | grep -Ee '(origin|dup)'
@@ -24,14 +24,14 @@ DOWN    dup          thin  13.1-RELEASE  -       10.42.0.4
 UP      origin       thin  13.1-RELEASE  -       10.42.0.4
 ```
 
-If you want to know the total number of duplicate IPs in a network, use `appjail network hosts -d`:
+If you want to know the total number of duplicate IPs in a network, use `appjail-network(1)` `hosts` `-d`:
 
 ```console
 # appjail network hosts -dn db
    2 10.42.0.4
 ```
 
-To solves this problem, use `appjail network reserve` and use `-a forceauto` to get an available IP from the pool. You can use a specific IP address and AppJail will check if it is in a valid range and another jail does not use it. Do not use `auto` because it does not reserve an IP address when the jail already has one.
+To solves this problem, use `appjail-network(1)` `reserve` and use `-a` `forceauto` to get an available IP from the pool. You can use a specific IP address and AppJail will check if it is in a valid range and another jail does not use it. Do not use `auto` because it does not reserve an IP address when the jail already has one.
 
 ```console
 # appjail network reserve -j dup -n web -a forceauto
@@ -48,7 +48,7 @@ UP      origin       thin  13.1-RELEASE  -       10.42.0.4
 
 !!! tip
     
-    A much easier way to solve the above problem is to use the `appjail network fix dup` command.
+    A much easier way to solve the above problem is to use the `appjail-network(1)` `fix` `dup` command.
 
 Another problem that can occur is when importing a jail that has a network with the same name as an existing one on the host, but with a different IP range.
 
@@ -62,7 +62,7 @@ DOWN    nginx        thin               13.1-RELEASE  -      10.32.0.16
 DOWN    teleirc      thin               13.1-RELEASE  -      10.32.0.6
 ```
 
-The above example reveals a big problem: `jtest` has a correct IP address, but `badwolf`, `php`, `mariadb`, `nginx` and `teleirc` have an invalid range since they were imported from another host. You can use the instructions explained earlier in the section, but AppJail has a useful command that simplifies this problem: `appjail network fix addr`.
+The above example reveals a big problem: `jtest` has a correct IP address, but `badwolf`, `php`, `mariadb`, `nginx` and `teleirc` have an invalid range since they were imported from another host. You can use the instructions explained earlier in the section, but AppJail has a useful command that simplifies this problem: `appjail-network(1)` `fix` `addr`.
 
 ```console
 # appjail network fix addr

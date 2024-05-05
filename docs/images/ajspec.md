@@ -1,6 +1,6 @@
 An ajspec file provides information about the image, such as the checksum, the site where the image will be downloaded, etc. The syntax of the ajspec file is the same as used in templates.
 
-The following table shows detailed information about ajspec parameters. The `Optional` column specifies whether a parameter is mandatory or not for some commands such as `appjail image update` and `appjail image import`. The `Multiple` column specifies whether a parameter can be specified multiple times or not.
+The following table shows detailed information about ajspec parameters. The `Optional` column specifies whether a parameter is mandatory or not for some commands such as `appjail-image(1)` `update` and `appjail-image(1)` `import`. The `Multiple` column specifies whether a parameter can be specified multiple times or not.
 
 | Parameter | Optional | Multiple | Description  |
 | --- | --- | --- | --- |
@@ -13,14 +13,14 @@ The following table shows detailed information about ajspec parameters. The `Opt
 | `<tag>.sum.<arch>` | No | No | Checksum. |
 | `<tag>.source.<arch>` | No | Yes | Sites where the image will be downloaded. If the first one fails, AppJail will try the second one and if it fails, AppJail will try the third one, and so on. |
 | `<tag>.size.<arch>` | Yes | No | Compressed image size. |
-| `entrypoint` | No | No | It is used by `appjail image update` to retrieve the ajspec when `appjail image import` is called and set by the latter. |
+| `entrypoint` | No | No | It is used by `appjail-image(1)` `update` to retrieve the ajspec when `appjail-image(1)` `import` is called and set by the latter. |
 | `ajspec` | Yes | No | Ajspec filename used by git-like methods. |
 | `<tag>.arch` | No | Yes | Architectures allowed by this image. |
 | `tags` | No | Yes | Image tags. |
 
-As you can see there are some things to talk about, such as `<tag>` and `<arch>`. `<tag>` specifies the image tag and `<arch>` the image architecture. It is important to remember to add the image tag to `tags` and the image architecture to `<tag>.arch` for AppJail recognize them. See `appjail image` for more details.
+As you can see there are some things to talk about, such as `<tag>` and `<arch>`. `<tag>` specifies the image tag and `<arch>` the image architecture. It is important to remember to add the image tag to `tags` and the image architecture to `<tag>.arch` for AppJail recognize them. See `appjail-image(1)` for more details.
 
-You probably won't need to manipulate an ajspec file many times, especially if you only want to use the image, but for when you need to edit it, `appjail image metadata` if your best friend.
+You probably won't need to manipulate an ajspec file many times, especially if you only want to use the image, but for when you need to edit it, `appjail-image(1)` `metadata` if your best friend.
 
 Before editing, it is worth looking at what we need to edit.
 

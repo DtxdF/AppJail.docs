@@ -1,4 +1,4 @@
-Thanks to virtual networks, AppJail can use NAT in two ways: manually, using `appjail nat` or automatically using `appjail quick`.
+Thanks to virtual networks, AppJail can use NAT in two ways: manually, using `appjail-nat(1)` or automatically using `appjail-quick(1)`.
 
 !!! warning
 
@@ -17,7 +17,7 @@ appjail quick jnat \
     start
 ```
 
-The `nat` option requires the `network` parameter to be defined, but as you can see in the example above, the virtual network `development` is the default network, which implies that the gateway is used as the default router, also, as `appjail quick` knows, it uses that network implicitly in some options like `nat` and `expose`.
+The `nat` option requires the `network` parameter to be defined, but as you can see in the example above, the virtual network `development` is the default network, which implies that the gateway is used as the default router, also, as `appjail-quick(1)` knows, it uses that network implicitly in some options like `nat` and `expose`.
 
 You can apply NAT on multiple networks. This is useful only if you plan to use the source address for different purposes.
 
@@ -55,7 +55,7 @@ PING 8.8.8.8 (8.8.8.8) from 10.0.0.2: 56 data bytes
 round-trip min/avg/max/stddev = 44.426/44.789/45.167/0.298 ms
 ```
 
-To create NAT rules manually for an existing jail, we can use `appjail nat`.
+To create NAT rules manually for an existing jail, we can use `appjail-nat(1)`.
 
 ```sh
 appjail quick jnat \
@@ -67,7 +67,7 @@ appjail-config set -Ij jnat exec.poststop='appjail nat off jail ${name}'
 appjail start jnat
 ```
 
-AppJail can apply NAT to an entire network space instead of a single jail. To do this, we need to use `appjail nat network` in the same way AppJail does for jails manually.
+AppJail can apply NAT to an entire network space instead of a single jail. To do this, we need to use `appjail-nat(1)` `network` in the same way AppJail does for jails manually.
 
 ```console
 # appjail nat add network db
@@ -84,7 +84,7 @@ Status:
 nat on jext inet from 10.42.0.0/24 to any -> (jext:0) round-robin
 ```
 
-The `appjail nat boot on network` command sets the boot flag to apply NAT rules when starting FreeBSD using the `appjail-natnet` service.
+The `appjail-nat(1)` `boot` `on` `network` command sets the boot flag to apply NAT rules when starting FreeBSD using the `appjail-natnet` service.
 
 !!! tip
 

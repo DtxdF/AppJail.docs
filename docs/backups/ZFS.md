@@ -11,7 +11,7 @@ AppJail can use ZFS to backup a jail in the same way as a tarball file. The grea
 #### Syntax
 
 ```
-output:out_name [portable] [compress:algo]
+output:outname [portable] [compress:algo]
 ```
 
 ##### output
@@ -20,15 +20,15 @@ Output name.
 
 ##### portable
 
-Ignored, but used by [export+root](#exportroot).
+Ignored, but used by `export+root`.
 
 ##### compress
 
-It has the same meaning as [export+jail](#exportjail) but does not use `tar(1)`.
+If specified, the file will be compressed.
 
 #### Description
 
-Recursively export the dataset of the jail (`{ZPOOL}/{ZROOTFS}/{JAIL_NAME}/jail`).
+Recursively export the jail dataset to a ZFS image file.
 
 #### Examples
 
@@ -41,24 +41,24 @@ appjail jail create -I zfs+export+jail="output:myjail.zsnap.gz compress:gzip" my
 #### Syntax
 
 ```
-output:out_name [portable] [compress:algo]
+output:outname [portable] [compress:algo]
 ```
 
 ##### output
 
-See [zfs+export+jail](#zfsexportjail).
+Output name.
 
 ##### portable
 
-Ignored, but used by [export+root](#exportroot).
+Ignored, but used by `export+root`.
 
 ##### compress
 
-See [zfs+export+jail](#zfsexportjail).
+If specified, the file will be compressed.
 
 #### Description
 
-Recursively export the root dataset of the jail (`{ZPOOL}/{ZROOTFS}/{JAIL_NAME}`).
+Recursively export the root jail dataset to a ZFS image file.
 
 #### Examples
 
@@ -71,26 +71,24 @@ appjail jail create -I zfs+export+root="output:myjail-root.zsnap.xz compress:xz"
 #### Syntax
 
 ```
-input:in_file [portable] [compress:algo]
+input:file [portable] [compress:algo]
 ```
 
 ##### input
 
-The file to import.
+ZFS image.
 
 ##### portable
 
-Ignored, but used by [import+root](#importroot).
+Ignored, but used by `import+root`.
 
 ##### compress
 
-AppJail can auto-detect the compression used, but you can force any other compression if you wish.
+Change the compression algorithm. Automatic detection of the algorithm used by the ZFS image is performed, but if it fails or you need to change for some reason, you do so using this subparameter.
 
 #### Description
 
-Import the file to the dataset of the jail (`{ZPOOL}/{ZROOTFS}/{JAIL_NAME}/jail`).
-
-The root dataset will be created.
+Create a new jail by importing a ZFS image into the jail directory.
 
 #### Examples
 
@@ -114,24 +112,24 @@ appjail quick mysql \
 #### Syntax
 
 ```
-input:in_file [portable] [compress:algo]
+input:file [portable] [compress:algo]
 ```
 
 ##### input
 
-See [zfs+import+jail](#zfsimportjail).
+ZFS image.
 
 ##### portable
 
-Ignored, but used by [import+root](#importroot).
+Ignored, but used by `import+root`.
 
 ##### compress
 
-See [zfs+import+jail](#zfsimportjail).
+Change the compression algorithm. Automatic detection of the algorithm used by the ZFS image is performed, but if it fails or you need to change for some reason, you do so using this subparameter.
 
 #### Description
 
-Import the file to the root dataset of the jail (`{ZPOOL}/{ZROOTFS}/{JAIL_NAME}`).
+Create a new jail by importing a ZFS image into the root directory of the jail.
 
 #### Examples
 
@@ -159,27 +157,27 @@ Clones is a useful feature of ZFS that saves time and space.
 
 AppJail takes advantage of this feature to clone a jail or a release to create some useful applications. For example, you can clone a generic jail named `webserver` which has its own configuration files, generic files, packages, etc. so you can clone it into a new jail named `nginx`. Another example is making a change to a jail, but copying the whole jail takes a lot of time and space, so cloning here is very useful.
 
-Clones should be used temporarily in the same way as thinjails and you should be aware that you cannot destroy a dataset of a jail on which another jail depends without forcing it (see `appjail jail destroy` for more details).
+Clones should be used temporarily in the same way as thinjails and you should be aware that you cannot destroy a dataset of a jail on which another jail depends without forcing it (see `appjail-jail(1)` `destroy` for more details).
 
 ### clone+jail
 
 #### Syntax
 
 ```
-jail2clone@snapname
+jail@snapshot
 ```
 
-##### jail2clone
+##### jail
 
-Jail name to clone.
+Jail to create a ZFS snapshot for cloning.
 
-##### snapname
+##### snapshot
 
-Snapshot name to be created if it does not exist.
+ZFS snapshot name.
 
 #### Description
 
-Clones a jail and uses it to create another jail.
+Create a new jail by cloning a ZFS <ins>snapshot</ins> of <ins>jail</ins>.
 
 #### Examples
 
@@ -200,18 +198,18 @@ appjail quick mariadb clone+jail=jdb@snap1 overwrite start
 #### Syntax
 
 ```
-snapname
+snapshot
 ```
 
-##### snapname
+##### snapshot
 
 Snapshot name to be created if it does not exist.
 
 #### Description
 
-Clones a release and uses it to create another jail.
+Create a new jail by cloning a ZFS <ins>snapshot</ins> of a release.
 
-Valid types: `thick`, `linux+debootstrap`
+With this option only the `linux+debootstrap` and `thick` jail types can be used.
 
 #### Examples
 
@@ -224,9 +222,9 @@ appjail jail create -T thick -v 12.3-RELEASE -I clone+release=snap1 bluejail
 ##### #2
 
 ```sh
-appjail quick bullseye \
+appjail quick bookworm \
     clone+release=linuxsnap1 \
-    osversion=bullseye \
+    osversion=bookworm \
     type=linux+debootstrap \
     alias=appjail0 \
     virtualnet="development" \

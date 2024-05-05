@@ -1,11 +1,11 @@
-Initscripts are another useful AppJail feature that are the core of Makejail. An initscript is simply a `sh(1)` script that AppJail loads to run a `stage`. A `stage` is a function within the initscript that is executed by an AppJail command as follows:
+**InitScripts** are another useful AppJail feature that are the core of Makejail. An initscript is simply a `sh(1)` script that AppJail loads to run a `stage`. A `stage` is a function within the initscript that is executed by an AppJail command as follows:
 
-* `create`: `appjail start` will run this `stage` before the jail starts.
-* `start`: `appjail start` will run this `stage` after the jail starts.
-* `stop`: `appjail stop` will run this `stage` after the jail is stopped.
-* `cmd`: `appjail run` will run this `stage` only when the jail is running.
-* `custom:<custom stage>`: `appjail run` will run this `stage` only when the jail is running. This stage is special because you can use any name you want (of course, not all characters are allowed).
-* `apply`: `appjail apply` will run this `stage` only when the jail exists.
+* `create`: Stage executed by `appjail-start(1)` before the jail is started.
+* `start`: Stage executed by `appjail-start(1)` after the jail is started.
+* `stop`: Stage executed by `appjail-stop(1)` before the jail is stopped.
+* `cmd`: Stage executed by `appjail-run(1)`.
+* `custom:<arbitrary string>`: Stage executed by appjail-run(1). The difference between cmd and this stage is that the latter can be defined using a valid arbitrary string. A valid arbitrary string is `^[a-zA-Z0-9_][a-zA-Z0-9_-]*$`.
+* `apply`: Stage executed by `appjail-apply(1)`.
 
 Each `stage` has `pre-` and `post-` functions. `pre-` is executed before `stage` is executed and if it fails, `stage` will not be executed. `post-` will be executed after `pre-` and `stage` even if they fail. `pre-` and `stage` affect the exit status, but `post-` does not. `stage` and functions in a initscript are all optional, AppJail will execute them if they exist.
 
@@ -94,7 +94,7 @@ poststop()
 }
 ```
 
-We use the `initscript` option in `appjail quick` to use this initscript in our new jail.
+We use the `initscript` option in `appjail-quick(1)` to use this initscript in our new jail.
 
 ```sh
 chmod +x /tmp/initscript
@@ -130,7 +130,7 @@ poststart args: <--parameter1> <I am the start parameter #1> <--parameter2> <I a
 
 As you can see, the `pre-` and `post-` functions receive the same parameters as their `stage`.
 
-`appjail run` will run `cmd` whenever we want and only if the jail is running.
+`appjail-run(1)` will run `cmd` whenever we want and only if the jail is running.
 
 ```console
 # appjail run -p 'msg=Hello, world!' myjail
@@ -161,14 +161,14 @@ poststop args: <--msg> <Bye ...>
 ...
 ```
 
-`appjail enable` is a command to enable arguments that need to be passed when the user does not provide them. This is necessary for commands such as `appjail startup` or `appjail restart` because these commands does not accept arguments for stages.
+`appjail-enable(1)` is a command to enable arguments that need to be passed when the user does not provide them. This is necessary for commands such as `appjail-startup(1)` or `appjail-restart(1)` because these commands does not accept arguments for stages.
 
 ```sh
 appjail enable myjail start -c 'create_msg=Hi everyone!' -s 'start_msg=Welcome.'
 appjail enable myjail stop -p 'stop_msg=Bye.'
 ```
 
-If we start or stop the jail without passing arguments, `appjail start` or `appjail stop` will use the arguments of the `appjail enable` command.
+If we start or stop the jail without passing arguments, `appjail-start(1)` or `appjail-stop(1)` will use the arguments of the `appjail-enable(1)` command.
 
 ```console
 # appjail start myjail
@@ -195,7 +195,7 @@ poststart args: <--start_msg> <Welcome.>
 [00:00:19] [ debug ] [myjail] `/usr/local/appjail/jails/myjail/init` exits with status code 0
 ```
 
-Initscripts are executed in the host, not in the jail. This decision is to run tasks in the host and tasks in the jail. To execute commands in a jail we use `jexec(8)`, but if we use fixed strings carelessly we may have some problems.
+**InitScripts** are executed in the host, not in the jail. This decision is to run tasks in the host and tasks in the jail. To execute commands in a jail we use `jexec(8)`, but if we use fixed strings carelessly we may have some problems.
 
 One problem we can see is that we rename a jail. The problem is that a command such as `jexec(8)` that uses the name of the jail to execute commands on it, will not execute correctly because the jail does not exist. Worse, there is a possibility that commands will be executed on a jail with totally different name than the one we intended.
 
@@ -206,7 +206,6 @@ AppJail solves this problem by keeping things simple: using the following enviro
 * `APPJAIL_JAILNAME`: Jail name.
 * `APPJAIL_ROOTDIR`: Root directory of the jail (`{JAILDIR}/{jail_name}`).
 * `APPJAIL_SCRIPT`: AppJail script.
-* `APPJAIL_PWD`: Since Makejail changes the current directory, `PWD` does not reflect the user's current directory. This environment variable allows a buildscript to know the user's current directory. Only available in the `build` stage of Makejail.
 
 With the above information we can make an initscript to display `Hello, world!`:
 
@@ -245,7 +244,7 @@ custom:top()
 }
 ```
 
-The above initscript has three custom stages: `python`, `php` and `top`. To run any of them, use `appjail run` with the `-s` parameter.
+The above initscript has three custom stages: `python`, `php` and `top`. To run any of them, use `appjail-run(1)` with the `-s` parameter.
 
 ```sh
 # python
@@ -256,4 +255,4 @@ appjail run -s php pyapp
 appjail run -s top pyapp
 ```
 
-Initscripts are a bit complex and there are some ways to create them much easier (See [Makejails](makejails/intro.md)).
+**InitScripts** are a bit complex and there are some ways to create them much easier (See [Makejails](makejails/intro.md)).

@@ -1,4 +1,4 @@
-As we have mentioned `appjail image metadata info` is the command to get information about an image, so with it we can know if we should update them or we can even know which images are installed.
+As we have mentioned `appjail-image(1)` `metadata` `info` is the command to get information about an image, so with it we can know if we should update them or we can even know which images are installed.
 
 ```console
 # appjail image metadata info
@@ -43,7 +43,7 @@ AJSPEC          :    .ajspec
 
 The `Installed` keyword is very important because it specifies which images are installed. As you can see, only the `gonic` image with the `latest` tag is missing, so it is not installed.
 
-If we no longer want an image, we can simply remove it using `appjail image remove`.
+If we no longer want an image, we can simply remove it using `appjail-image(1)` `remove`.
 
 ```console
 # appjail image remove hello
@@ -54,7 +54,7 @@ gonic
 
 !!! warning
 
-    When using ZFS as the backend file system `appjail image remove` will recursively
+    When using ZFS as the backend file system `appjail-image(1)` `remove` will recursively
     remove all datasets including all references, such as clones. Be careful.
 
 But what happens when we want to remove a specific tag?
@@ -65,7 +65,7 @@ But what happens when we want to remove a specific tag?
 /usr/local/appjail/cache/images/gonic/minimal-amd64-image.appjail
 ```
 
-When we pass `-t` to `appjail image remove` AppJail will remove that specific tag but for all architectures. We can specify the architecture and the tag.
+When we pass `-t` to `appjail-image(1)` `remove` AppJail will remove that specific tag but for all architectures. We can specify the architecture and the tag.
 
 ```console
 # appjail image remove -a amd64 -t latest hello

@@ -1,4 +1,4 @@
-AppJail can start jails at system startup using the `appjail` RC script which is just a wrapper for `appjail startup`. But this command only starts jails that have the `boot flag` set to `on` and the order can be specified using priorities.
+AppJail can start jails at system startup using the `appjail` RC script which is just a wrapper for `appjail-startup(1)`. But this command only starts jails that have the `boot flag` set to `on` and the order can be specified using priorities.
 
 !!! tip
 
@@ -11,7 +11,7 @@ Since these features are very useful when used in conjunction with [Dependent Ja
 appjail jail boot on nginx
 ```
 
-We can use `appjail jail list` to see if the `boot flag` is enabled for this jail.
+We can use `appjail-jail(1)` `list` to see if the `boot flag` is enabled for this jail.
 
 ```console
 # appjail jail list -j nginx boot name
@@ -19,13 +19,13 @@ BOOT  NAME
 1     nginx
 ```
 
-`appjail quick` can create a jail with the `boot flag`.
+`appjail-quick(1)` can create a jail with the `boot` `flag`.
 
 ```sh
 appjail quick myjail boot overwrite
 ```
 
-Jails have the same priority at the time of their creation (unless you use the `priority` option in `appjail quick`), so `appjail startup` will start the jails in the order they appear. If we want to start a jail before the others we have to change the priority using `appjail jail priority`.
+Jails have the same priority at the time of their creation (unless you use the `priority` option in `appjail-quick(1)`), so `appjail-startup(1)` will start the jails in the order they appear. If we want to start a jail before the others we have to change the priority using `appjail-jail(1)` `priority`.
 
 ```sh
 appjail jail priority -p 10 myjail
@@ -45,9 +45,9 @@ BOOT  PRIORITY  NAME
 0     0         vjail
 ```
 
-`appjail startup` will stop the previous jails in reverse order.
+`appjail-startup(1)` will stop the previous jails in reverse order.
 
 !!! note "Notes"
 
-    1. By default, when a jail is created using `appjail quick` the boot flag is enabled by that jail. See AppJail configuration file for more details.
-    2. If `USE_PARALLEL` is enabled (default: `1`), AppJail starts the jails in parallel with the same priority in that order.
+    1. By default, when a jail is created using `appjail-quick(1)` the boot flag is enabled by that jail. See AppJail configuration file for more details.
+    2. If `USE_PARALLEL` is enabled, AppJail starts the jails in parallel with the same priority in that order.

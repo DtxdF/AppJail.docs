@@ -2,13 +2,13 @@ Getting security patches and upgrading to a new version is very important and Ap
 
 ## update
 
-A jail can be updated using `appjail update jail`:
+A jail can be updated using `appjail-update(1)` `jail`:
 
 ```sh
 appjail update jail blue
 ```
 
-A version can be updated using `appjail update release` and if no parameters are used it uses the default variables specified in the configuration file.
+A version can be updated using `appjail-update(1)` `release` and if no parameters are used it uses the default variables specified in the configuration file.
 
 ```sh
 # Update using default variables
@@ -37,7 +37,7 @@ Upgrading a release is a little different than upgrade a jail. When AppJail upgr
 
 The motivation for making a new copy is to preserve this directory for thinjail that are still using that release.
 
-Another reason is to preserve this release, although you can destroy it using `appjail fetch destroy`.
+Another reason is to preserve this release, although you can destroy it using `appjail-fetch(1)` `destroy`.
 
 To upgrade a release from `12.3-RELEASE` to `13.1-RELEASE`:
 
@@ -55,6 +55,8 @@ Instead of trying to upgrade, I recommend separating the data that the jail uses
 The data used by the jail is just stuff that can be obtained for each release, such as the base system programs, the configuration files used by those programs, etc. The data that must persist is such as a database, logs, custom applications, configuration files used by those applications or that you have modified, etc.
 
 If you don't want to treat jails like cattle, use the pet version: thickjails.
+
+See `appjail-ephemeral(7)` for details.
 
 ## Updating from a source tree
 

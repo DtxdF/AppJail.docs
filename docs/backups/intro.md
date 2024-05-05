@@ -1,4 +1,4 @@
-AppJail has a useful features to backup your jails. AppJail can also clone a jail or a release and use it to create another jail. You can also make a copy to create another jail without saving space unlike cloning.
+AppJail has many ways to backup your jails, from copying or cloning a jail or a release to create another jail, to exporting a jail to a ZFS image or tarball file.
 
 !!! note
 

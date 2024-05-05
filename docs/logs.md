@@ -1,17 +1,17 @@
-AppJail has its own way of saving logs. Fortunately, it is not difficult to learn.
+AppJail has its own way to list, read and remove logs created by itself. The idea is to have a centralized form to manage static log files created by some AppJail subcommands or by AppJail itself.
 
-AppJail uses four things: `type`, `entity`, `subtype` and `log`.
+Having just files scattered around the filesystem doesn't make sense, since you probably want to know which part of AppJail generates them, when, and you also want to keep them for a long time until you don't really need them. AppJail solves this with a very simple approach:
 
-* `type`: refers to a group of entities with the same meaning in a context.
-* `entity`: refers to an individual thin in a group.
-* `subtype`: refers to a group of logs with the same mearing in a context.
-* `log`: name of the log.
+* `type`: Refers to a group of entities with the same meaning in a context.
+* `entity`: Refers to an individual in a group.
+* `subtype`: Refers to a group of logs with the same meaning in a context.
+* `log`: Log filename.
 
 **types**:
 
 * `commands`: Logs created by commands.
 * `jails`: Logs created by jails.
-* `nat`: Logs created by the `appjail nat` command or something similar.
+* `nat`: Logs created by commands that perform NAT or are related to this operation.
 
 **entity**
 
@@ -19,19 +19,19 @@ The entities can be a network, a jail or something similar. They are dynamic.
 
 **subtype**:
 
-* `jails/{ENTITY}/build`: Output of a compilation when executing `update jail`. This is for thickjails that are installed using a source tree.
-* `jails/{ENTITY}/console`: A file to direct command output (stdout and stderr) to.
-* `jails/{ENTITY}/healthcheckers`: Where healthcheckers logs their output.
-* `{jails|nat}/{ENTITY}/{startup-start|startup-stop}`: Logs created by the `appjail startup` command.
-* `releases/{ENTITY}/build`: Output of a compilation when executing `fetch src`.
-* `commands/{ENTITY}/output`: When `ENABLE_LOGGING_OUTPUT` is set to 1, AppJail will log all output of a command.
-* `{jails|releases}/${ENTITY}/etcupdate`: Output of `etcupdate(8)` when executing `etcupdate`.
+* `jails/{ENTITY}/build`: Logs created when building the FreeBSD source tree using the jail subcommand of `appjail-update(1)`.
+* `jails/{ENTITY}/console`: Logs created by the `exec.consolelog` parameter of `jail(8)` and configured by `appjail-start(8)` when not specified by the user in a **Template**.
+* `jails/{ENTITY}/healthcheckers`: Logs created by Healthcheckers.
+* `{jails|nat}/{ENTITY}/{startup-start|startup-stop}`: Logs created by `appjail-startup(1)`.
+* `releases/{ENTITY}/build`: Same as `jails/ENTITY/build` but for releases.
+* `commands/{ENTITY}/output`: If `ENABLE_LOGGING_OUTPUT` is enabled, an AppJail session is logged to this file.
+* `{jails|releases}/${ENTITY}/etcupdate`: An appjail-etcupdate(1) session is logged to this file.
 
 **log**:
 
-The name of the logs can be changed as desired. See the configuration file for details.
+Log filename can be changed as desired. See `appjail.conf(5)` for details.
 
-Logs can be listed simply using `appjail logs` with no arguments or executing `appjail logs list`.
+Logs can be listed simply using `appjail-logs(1)` with no arguments or executing `appjail-logs(1)` `list`.
 
 ```console
 # appjail logs
@@ -170,10 +170,10 @@ appjail logs remove -g 'jails/otherjail/startup-start/2023-02-0[34].log'
 
 !!! warning
 
-    When using ZFS as the backend file system `appjail logs remove` will recursively
+    When using ZFS as the backend file system `appjail-logs(1)` `remove` will recursively
     remove all datasets including all references, such as clones. Be careful.
 
-`appjail logs tail` can be used to display the last part of a file.
+`appjail-logs(1)` `tail` can be used to display the last part of a file.
 
 ```sh
 appjail logs tail jails/jalias6/startup-stop/2023-02-04.log -f

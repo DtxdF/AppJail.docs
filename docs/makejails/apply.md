@@ -15,13 +15,13 @@ PKG telegram-desktop \
 
 As you can see, we need to put `STAGE apply` before the instructions are executed.
 
-To apply this Makejail just execute `appjail apply`.
+To apply this Makejail just execute `appjail-apply(1)`.
 
 ```sh
 appjail apply xrdp Makejail.apply
 ```
 
-`appjail apply` does not require the jail to be started, it only needs an existing jail. This implies that some instructions that are intended to be executed in a started jail should not work.
+`appjail-apply(1)` does not require the jail to be started, it only needs an existing jail. This implies that some instructions that are intended to be executed in a started jail should not work.
 
 ## Notes
 

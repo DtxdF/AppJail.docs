@@ -14,7 +14,7 @@ appjail quick jtest \
 appjail healthcheck set jtest
 ```
 
-To list all healthcheckers of the given jail use `appjail healthcheck list`.
+To list all healthcheckers of the given jail use `appjail-healthcheck(1)` `list`.
 
 ```console
 # appjail healthcheck list jtest
@@ -49,7 +49,7 @@ NRO  INTERVAL  RECOVER_KILL_AFTER  RECOVER_TIMEOUT  RECOVER_TIMEOUT_SIGNAL  RECO
 0    30        180                 120              sigterm                 3              3        0             120      sigterm
 ```
 
-To run the healthcheckers in the foreground we can use `appjail healthcheck run`.
+To run the healthcheckers in the foreground we can use `appjail-healthcheck(1)` `run`.
 
 ```console
 # appjail healthcheck run jtest

@@ -17,7 +17,7 @@ Let's suppose we finish developing our python application and we don't need the 
 
 We can use only the first characters as ID to write less, but if two or more Makejails match, it is necessary to write more characters to make the ID unique.
 
-Makejails are automatically updated by default since the value of `AUTO_GIT_UPDATE` is `1`, but we can manually update a Makejail using `appjail makejail -u`.
+Makejails are automatically updated by default since the value of `AUTO_GIT_UPDATE` is `1`, but we can manually update a Makejail using `appjail-makejail(1)` `-u`.
 
 ```console
 # appjail makejail -l

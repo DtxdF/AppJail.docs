@@ -76,7 +76,7 @@ webapp
 
     When retrieving an ajspec file on import, it will overwrite the current ajspec file.
 
-AppJail can update images for you. You just need to use `appjail image update`.
+AppJail can update images for you. You just need to use `appjail-image(1)` `update`.
 
 ```console
 # appjail image update

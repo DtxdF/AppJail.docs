@@ -141,7 +141,7 @@ The above files have the following structure.
 11 directories, 7 files
 ```
 
-Now, we can use `appjail makejail` to get a web server with PHP.
+Now, we can use `appjail-makejail(1)` to get a web server with PHP.
 
 ```console
 # appjail makejail -j php

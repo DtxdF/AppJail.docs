@@ -30,7 +30,7 @@ service appjail-dns start
 
 ## Using a custom resolv.conf(5) file (recommended)
 
-We now have our DNS server up and running, so we just need to tell the new jails to point to that server. This can be accomplished by simply editing `/etc/resolv.conf` on the host but this has some problems which are described in the next section. Another much simpler way is to set `DEFAULT_RESOLV_CONF` (default: `/etc/resolv.conf`) to a custom `resolv.conf(5)` file in our AppJail configuration file.
+We now have our DNS server up and running, so we just need to tell the new jails to point to that server. This can be accomplished by simply editing `/etc/resolv.conf` on the host but this has some problems which are described in the next section. Another much simpler way is to set `DEFAULT_RESOLV_CONF` to a custom `resolv.conf(5)` file in our AppJail configuration file.
 
 **/usr/local/etc/appjail/appjail.conf**
 
@@ -112,7 +112,7 @@ round-trip min/avg/max/stddev = 0.207/0.228/0.275/0.028 ms
 
 ## Using shorter domain names
 
-If you prefer a much shorter name than the one used above, you can set `SHORTEN_DOMAIN_NAMES` (default: `0`) to `1` in your AppJail configuration file.
+If you prefer a much shorter name than the one used above, you can set `SHORTEN_DOMAIN_NAMES` to `1` in your AppJail configuration file.
 
 ```console
 # ping -c4 redis
@@ -129,7 +129,6 @@ round-trip min/avg/max/stddev = 0.154/0.201/0.244/0.033 ms
 
 !!! info
 
-    Use `NETWORK_TO_SHORTEN` (default: `${AUTO_NETWORK_NAME}` which defaults to `ajnet`)
-    defined in your AppJail configuration file to choose which network name to shorten.
+    Use `NETWORK_TO_SHORTEN` defined in your AppJail configuration file to choose which network name to shorten.
 
 When the above feature is enabled, you can use either the short or the long name. The network domain names are kept intact, so if you need to get the IP of the network you must use its long name, e.g. `ajnet.appjail`, so you cannot just use `ajnet`.

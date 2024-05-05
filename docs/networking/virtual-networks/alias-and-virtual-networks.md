@@ -14,7 +14,7 @@ The interface name can be whatever you want, but I recommend keeping it simple.
 appjail quick debian \
     alias="appjail0" \
     virtualnet="development" \
-    osversion=bullseye \
+    osversion=bookworm \
     type=linux+debootstrap \
     start \
     linuxfs \

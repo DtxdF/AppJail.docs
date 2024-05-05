@@ -1,10 +1,10 @@
 AppJail uses its own way to use the `fstab(5)` file if you don't use `mount.fstab` as you can see in `Templates`.
 
-The main motivation is to allow mounting devices with strange characters, like a space in a directory. Especially in shared environments when users have no control over how they can name their files and directories. `fstab(5)` allows you to mount such devices, but it is not automated, so `appjail fstab` does it for you.
+The main motivation is to allow mounting devices with strange characters, like a space in a directory. Especially in shared environments when users have no control over how they can name their files and directories. `fstab(5)` allows you to mount such devices, but it is not automated, so `appjail-fstab(1)` does it for you.
 
 Another reason to get a specific order of the fields used by a jail and a useful description that allows you or another sysadmin to remember them very easily.
 
-`appjail fstab` has some useful commands. For example, you can list the current entries using `appjail fstab jail <jail name> list`.
+`appjail-fstab(1)` has some useful commands. For example, you can list the current entries using `appjail-fstab(1)` `jail` `<jail name>` `list`.
 
 ```console
 # appjail fstab jail debian list
@@ -18,11 +18,11 @@ NRO  ENABLED  NAME  DEVICE     MOUNTPOINT  TYPE       OPTIONS               DUMP
 
 It shows us their fields and their meanings are:
 
-* `NRO`: NRO is an arbitrary number representing the entry and order in which `appjail fstab jail ... compile` writes to the resulting `fstab(5)`. AppJail generates the NRO using the last NRO plus 1 when the `-n` parameter is not used in `appjail fstab jail ... set`or `0` is used when there is no entry.
+* `NRO`: NRO is an arbitrary number representing the entry and order in which `appjail-fstab(1)` `jail` `<jail name>` `compile` writes to the resulting `fstab(5)`. AppJail generates the NRO using the last NRO plus 1 when the `-n` parameter is not used in `appjail-fstab(1)` `jail` `<jail name>` `set` or `0` is used when there is no entry.
 * `ENABLED`: Indicates whether this entry will be written to the resulting `fstab(5)` file.
 * `DEVICE`, `MOUNTPOINT`, `TYPE`, `OPTIONS`, `DUMP`, `PASS`: Represents the entries in the `fstab(5)` file.
 
-We can add more entries using the `appjail fstab jail ... set` command. For example, to run x11 applications we need to mount `/tmp/.X11-unix`.
+We can add more entries using the `appjail-fstab(1)` `jail` `<jail name>` `set` command. For example, to run x11 applications we need to mount `/tmp/.X11-unix`.
 
 ```console
 # appjail cmd local debian mkdir -p tmp/.X11-unix
@@ -43,7 +43,7 @@ If you want to change a field of an existing entry, just specify the NRO and the
 appjail fstab jail debian set -n 0 -o rw,ruleset=11
 ```
 
-To mount those device we can either restart the jail or use `appjail fstab jail ... compile` and `appjail fstab jail ... mount -a`.
+To mount those device we can either restart the jail or use `appjail-fstab(1)` `jail` `<jail name>` `compile` and `appjail-fstab(1)` `jail` `<jail name>` `mount` `-a`.
 
 ```sh
 appjail restart debian
@@ -99,11 +99,11 @@ NRO  ENABLED  NAME  DEVICE      MOUNTPOINT  TYPE    OPTIONS  DUMP  PASS
 
 ### PseudoFS
 
-An interesting and useful feature of `appjail fstab` is when you set `type` to `<pseudofs>`. It is actually a pseudo-filesystem as the name implies, in other words, this does not exist on your system.
+An interesting and useful feature of `appjail-fstab(1)` is when you set `type` to `<pseudofs>`. It is actually a pseudo-filesystem as the name implies, in other words, this does not exist on your system.
 
 The purpose of this handy feature is to allow you to easily separate the data that should persist when removing the jail. For example, imagine you import an image and it comes with `/usr/local/www/apache24/data/wp-content` indicating a WordPress installation. Such files and subdirectories will be removed with the jail data and other things it contains. For this data to persist, you must move them to the host and mount them using `mount_nullfs(8)`. You will probably need to stop the jail before moving the files as some applications may not be able to run correctly.
 
-This pseudo-filesystem does this. It moves the data from the jail to the host when you run `appjail fstab jail ... compile` and mounts that file or directory using `mount_nullfs(8)`, so that when you remove the jail, your data is safe.
+This pseudo-filesystem does this. It moves the data from the jail to the host when you run `appjail-fstab(1)` `jail` `<jail name>` `compile` and mounts that file or directory using `mount_nullfs(8)`, so that when you remove the jail, your data is safe.
 
 As a side note, `PASS` and `DUMP` will be ignored.
 
@@ -227,7 +227,7 @@ logs  /volumes/logs  <pseudofs>  10001  -    750
 
 ### Notes
 
-* `appjail fstab jail ... compile` will do some things for you. If the file system type is `nullfs` it will create the file or directory inside the jail specified by `MOUNTPOINT` depending on whether `DEVICE` is a file or directory, or an error is displayed when the file's type is not a file or directory. If the file system type is `<pseudofs>` it will perform the same things as `nullfs` plus other things described in `PseudoFS`. If none of these file system types match and `MOUNTPOINT` does not exist inside the jail, a directory pointing to that path will be created.
+* `appjail-fstab(1)` `jail` `<jail name>` `compile` will do some things for you. If the file system type is `nullfs` it will create the file or directory inside the jail specified by `MOUNTPOINT` depending on whether `DEVICE` is a file or directory, or an error is displayed when the file's type is not a file or directory. If the file system type is `<pseudofs>` it will perform the same things as `nullfs` plus other things described in `PseudoFS`. If none of these file system types match and `MOUNTPOINT` does not exist inside the jail, a directory pointing to that path will be created.
 * You can reverse the mount order of a device by using the `:reverse` suffix, although it is only valid for `nullfs` and `<pseudofs>`. This implies that the `mountpoint` is mounted on `device`.
 
 ---

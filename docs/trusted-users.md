@@ -5,7 +5,7 @@
 
 When you share a server with co-workers or when you are the only person using a laptop, it is probably worth using AppJail without accessing the `root` account. AppJail has a simple but useful wrapper for such users named `appjail-user`.
 
-The `appjail-user` uses `RUNAS` (default: `doas`) to execute AppJail commands as root. You can set it in the AppJail configuration file to whatever you prefer, such as `sudo` or `doas`. Of course, you need to install one of them first. I recommend using `security/doas` because it is simple and secure.
+The `appjail-user` uses `RUNAS` to execute AppJail commands as root. You can set it in the AppJail configuration file to whatever you prefer, such as `sudo` or `doas`. Of course, you need to install one of them first. I recommend using `security/doas` because it is simple and secure.
 
 The only rule required in your `doas.conf(5)` file is:
 

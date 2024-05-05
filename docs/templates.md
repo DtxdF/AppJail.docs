@@ -31,11 +31,11 @@ The syntax is based on `jail.conf(5)`, but has some differences:
 
 AppJail tries to not to lose functionality by using this format. You can use variables, for example.
 
-Although you can use any parameter you want in a template, `appjail start` intercepts some parameters:
+Although you can use any parameter you want in a template, `appjail-start(1)` intercepts some parameters:
 
 * `exec.consolelog`: If not set, AppJail sets it in a console log type. See [Logs](logs.md).
-* `mount.fstab`: If not set, AppJail uses the compiled fields of the `appjail fstab` command. See [File System Management](fs-mgmt.md).
-* `host.hostname`: If not set, AppJail concatenates the jail name and `HOST_DOMAIN` (default: `.appjail`) defined in your AppJail configuration file.
+* `mount.fstab`: If not set, AppJail uses the compiled fields of the `appjail-fstab(1)` command. See [File System Management](fs-mgmt.md).
+* `host.hostname`: If not set, AppJail concatenates the jail name and `HOST_DOMAIN` defined in your AppJail configuration file.
 * `depend`: If set, AppJail will recursively start these jails. See [Dependent Jails](dependent-jails.md).
 
 As mentioned above, you can use rows and columns instead of lists. To illustrate this, the following is useful:
@@ -94,7 +94,7 @@ Templates have another useful feature: `required parameters`.
 
 Instead of using static parameters with values that may not be portable across multiple environments, we can use `required parameters` to force the user to edit some parameters. If the user does not edit those parameters, the jail won't start.
 
-`required parameters` are parameters starting with an asterisk (`*`). The value is optional, but if set, `appjail start` uses it to display a custom message.
+`required parameters` are parameters starting with an asterisk (`*`). The value is optional, but if set, `appjail-start(1)` uses it to display a custom message.
 
 ```
 exec.start: "/bin/sh /etc/rc"
@@ -109,7 +109,7 @@ vnet
     We can open an editor using `appjail-config edit` or use `appjail-config set -R1`
     to convert a parameter into a required one.
 
-As mentioned, if we don't edit the template before starting the jail, `appjail start` will complain:
+As mentioned, if we don't edit the template before starting the jail, `appjail-start(1)` will complain:
 
 ```console
 # appjail quick vjail start template=/tmp/vnet.conf
