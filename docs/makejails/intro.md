@@ -1,4 +1,4 @@
-Makejail is a simple text file that automates the steps of creating a jail, generate an **InitScript** and a **BuildScript**.
+Makejail is a simple text file that automates the steps of creating a jail, by generating an **InitScript** and a **BuildScript**.
 
 Makejails are processed line by line, removing comments, empty lines and including the Makejails specified by `INCLUDE` (if any) in a single, temporary Makejail that is responsible for executing the rest of the supported instructions. See `INCLUDE` for more details.
 
