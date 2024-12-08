@@ -32,4 +32,5 @@ AppJail offers simple ways to do complex things.
 * Healthcheckers - Monitor your jails and make sure they are healthy!
 * Images - Your jail in a single file!
 * DEVFS support - Dynamic device management!
+* OCI support - Containers everywhere!
 * ...
