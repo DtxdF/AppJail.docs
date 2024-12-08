@@ -68,6 +68,10 @@ IS_CONTAINER  CONTAINER            CONTAINER_IMAGE                 CONTAINER_PID
 1             appjail-d11dccc9113  docker.io/dtxdf007/filebrowser  51722          1               filebrowser
 ```
 
+!!! warning
+
+    You need to install `sysutils/buildah` and `textproc/jq` before using the `appjail-oci(1)` command.
+
 ---
 
 **See also**:
