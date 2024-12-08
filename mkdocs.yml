@@ -96,6 +96,7 @@ nav:
     - 'Images & Makejails': images/images-and-makejails.md
   - Source Tree: source-tree.md
   - Dynamic DEVFS Ruleset Management: DEVFS.md
+  - Open Containers Initiative (OCI): OCI.md
 plugins:
   - with-pdf:
       cover_subtitle: 'Simple and easy-to-use tool for creating portable jails'
