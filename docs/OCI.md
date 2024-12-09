@@ -51,7 +51,7 @@ appjail oci set-boot on filebrowser
 OCI containers expect to be configured through environment variables. You can specify to `appjail-start(1)` to use specific environment variables, so that the process can use them to suit your needs.
 
 ```sh
-appjail oci set-env filebrowser FB_NOAUTH=1
+appjail oci set-env filebrowser FB_NOAUTH 1
 ```
 
 `appjail-oci(1)` `run` will create a new jail and a new container each time. Maybe you just want to run a command to a container instead of creating a new one, the good news is that this command is just a wrapper to `appjail-oci(1)` `from` and `appjail-oci(1)` `exec`. We can use the latter command to perform this task.
