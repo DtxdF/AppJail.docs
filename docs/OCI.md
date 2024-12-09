@@ -42,7 +42,7 @@ With a single command we have created a jail and a container that has `filebrows
 
 If we stop and start the jail again, the process will not start because we have not specified the `-o "container=boot"` option, however, it is preferable to use this option with `appjail-oci(1)` `from` because the mentioned option will start the process and the `appjail-oci(1)` `run` command will perform the same task resulting in an error because only one background process can be executed per jail.
 
-You can instruct the `appjail-start(1)` command to start the process in background using `appjail-oci(1)` ` `set-boot` `on`.
+You can instruct the `appjail-start(1)` command to start the process in background using `appjail-oci(1)` `set-boot` `on`.
 
 ```sh
 appjail oci set-boot on filebrowser
