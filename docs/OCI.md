@@ -2,7 +2,7 @@ The Open Container Initiative (OCI) is an effort to create an open industry stan
 
 ```console
 # mkdir -p srv database config
-# touch config/database.db
+# touch database/database.db
 # appjail oci run \
     -d \
     -o overwrite=force \
