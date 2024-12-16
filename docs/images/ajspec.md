@@ -14,6 +14,7 @@ The following table shows detailed information about ajspec parameters. The `Opt
 | `<tag>.source.<arch>` | No | Yes | Sites where the image will be downloaded. If the first one fails, AppJail will try the second one and if it fails, AppJail will try the third one, and so on. |
 | `<tag>.size.<arch>` | Yes | No | Compressed image size. |
 | `entrypoint` | No | No | It is used by `appjail-image(1)` `update` to retrieve the ajspec when `appjail-image(1)` `import` is called and set by the latter. |
+| `maintenance` | Yes | No | Brief description of why this image cannot be imported. |
 | `ajspec` | Yes | No | Ajspec filename used by git-like methods. |
 | `<tag>.arch` | No | Yes | Architectures allowed by this image. |
 | `tags` | No | Yes | Image tags. |
