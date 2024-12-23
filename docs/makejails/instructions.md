@@ -403,7 +403,7 @@ Wrapper for the `git` method but with `--basedir` set to `git@gitlab:`.
 ### LABEL
 
 ```
-LABEL key=value
+LABEL key[=value]
 ```
 
 Add a new label to the jail.
