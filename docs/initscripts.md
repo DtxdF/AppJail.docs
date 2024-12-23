@@ -256,3 +256,278 @@ appjail run -s top pyapp
 ```
 
 **InitScripts** are a bit complex and there are some ways to create them much easier (See [Makejails](makejails/intro.md)).
+
+### InitScript Library
+
+An **InitScript** is as powerful as any other `sh(1)` script, the problem is that although the built-in environment variables can help, they are not enough for some common tasks, that's why there is a "library" with some subroutines you can use, inspired by `appjail-makejail(5)`.
+
+**initscript**:
+
+```sh
+. "${LIBDIR}/initscript"
+
+create()
+{
+    local volume_created
+    volume_created=`LABEL:GET initscripts.volumes.shared`
+
+    if [ -z "${volume_created}" ]; then
+        VOLUME -m /shared shared-dir
+
+        LABEL:ADD initscripts.volumes.shared 1
+    fi
+}
+
+start()
+{
+	ARG enable_bpf 0
+	ARG install_htop 0
+	ARG install_nginx 0
+	ARG nginx_conf
+	ARG nginx_worker_processes auto
+	ARG nginx_worker_connections 1024
+	ARG nginx_keepalive_timeout 65
+	ARG nginx_server_name localhost
+
+	PARSE "$@"
+
+	[ -d /shared ] || mkdir -p /shared
+
+	local shared_mounted
+	shared_mounted=`LABEL:GET initscripts.mounted.shared`
+
+	if [ -z "${shared_mounted}" ]; then
+		MOUNT /shared shared-dir "<volumefs>" ro || exit $?
+
+		LABEL:ADD initscripts.mounted.shared 1 || exit $?
+	fi
+
+	if [ "${ARG_enable_bpf}" != 0 ]; then
+		local bpf
+		bpf=`LABEL:GET initscripts.devices.bpf`
+
+		if [ -z "${bpf}" ]; then
+			DEVICE:SET 'include $devfsrules_hide_all' || exit $?
+			DEVICE:SET 'include $devfsrules_unhide_basic' || exit $?
+			DEVICE:SET 'include $devfsrules_unhide_login' || exit $?
+			DEVICE:SET 'path "bpf*" unhide' || exit $?
+			DEVICE:SET 'path bpf unhide' || exit $?
+			DEVICE:APPLYSET || exit $?
+
+			LABEL:ADD initscripts.devices.bpf 1 || exit $?
+		fi
+	fi
+
+	local htop_installed
+	htop_installed=`LABEL:GET initscripts.packages.htop`
+
+	if [ "${ARG_install_htop}" != 0 ] && [ -z "${htop_installed}" ]; then
+		PKG install -y htop || exit $?
+
+		LABEL:ADD initscripts.packages.htop 1 || exit $?
+	fi
+
+	local nginx_installed
+	nginx_installed=`LABEL:GET initscripts.packages.nginx`
+
+	if [ "${ARG_install_nginx}" != 0 ] && [ -z "${nginx_installed}" ]; then
+		PKG install -y nginx || exit $?
+
+		if [ -n "${ARG_nginx_conf}" ]; then
+			if [ ! -f "${ARG_nginx_conf}" ]; then
+				printf "%s: nginx configuration file cannot be found.\n" "${ARG_nginx_conf}"
+				return 1
+			fi
+
+			local nginx_conf
+			nginx_conf="/usr/local/etc/nginx/nginx.conf"
+
+			cp -af "${ARG_nginx_conf}" "${APPJAIL_JAILDIR}/${nginx_conf}" || exit $?
+
+			REPLACE "${nginx_conf}" WORKER_PROCESSES "${ARG_nginx_worker_processes}" || exit $?
+			REPLACE "${nginx_conf}" WORKER_CONNECTIONS "${ARG_nginx_worker_connections}" || exit $?
+			REPLACE "${nginx_conf}" KEEPALIVE_TIMEOUT "${ARG_nginx_keepalive_timeout}" || exit $?
+			REPLACE "${nginx_conf}" SERVER_NAME "${ARG_nginx_server_name}" || exit $?
+		fi
+
+		SYSRC nginx_enable=YES || exit $?
+		SERVICE nginx start || exit $?
+
+		LABEL:ADD initscripts.packages.nginx 1 || exit $?
+	fi
+}
+
+cmd()
+{
+	if ! CMD which -s htop; then
+		echo "sysutils/htop is not installed!" >&2
+		return 1
+	fi
+
+	CMD htop
+}
+
+custom:test_pwd()
+{
+	WORKDIR /shared
+
+	CMD pwd
+}
+
+custom:test_env()
+{
+	INITENV
+
+	CMD env
+}
+
+custom:test_chroot()
+{
+	CMD /bin/sh
+}
+
+custom:test_jaildir()
+{
+	JAILDIR /bin/sh
+}
+
+custom:test_local()
+{
+	LOCAL /bin/sh
+}
+
+stop()
+{
+	echo "Good byte!"
+}
+```
+
+The above file demonstrates how much simpler it is to use the library.
+
+```console
+# appjail quick jtest \
+    start \
+    overwrite=force \
+    alias \
+    ip4_inherit \
+    start_args="install_nginx=1" \
+    start_args="install_htop=1" \
+    initscript="$PWD/initscript"
+...
+[00:00:30] [ debug ] [jtest] Compiling fstab #0: /shared shared-dir <volumefs> ro 0 0
+Updating FreeBSD repository catalogue...
+Fetching meta.conf: 100%    178 B   0.2kB/s    00:01
+Fetching data.pkg: 100%    7 MiB 324.1kB/s    00:23
+Processing entries: 100%
+FreeBSD repository update completed. 35543 packages processed.
+All repositories are up to date.
+The following 1 package(s) will be affected (of 0 checked):
+
+New packages to be INSTALLED:
+        htop: 3.3.0_5
+
+Number of packages to be installed: 1
+
+107 KiB to be downloaded.
+[1/1] Fetching htop-3.3.0_5.pkg: 100%  107 KiB 109.9kB/s    00:01
+Checking integrity... done (0 conflicting)
+[1/1] Installing htop-3.3.0_5...
+[1/1] Extracting htop-3.3.0_5: 100%
+Updating FreeBSD repository catalogue...
+FreeBSD repository is up to date.
+All repositories are up to date.
+The following 2 package(s) will be affected (of 0 checked):
+
+New packages to be INSTALLED:
+        nginx: 1.26.2_5,3
+        pcre2: 10.43
+
+Number of packages to be installed: 2
+
+The process will require 9 MiB more space.
+2 MiB to be downloaded.
+[1/2] Fetching nginx-1.26.2_5,3.pkg: 100%  558 KiB 571.2kB/s    00:01
+[2/2] Fetching pcre2-10.43.pkg: 100%    1 MiB 483.7kB/s    00:03
+Checking integrity... done (0 conflicting)
+[1/2] Installing pcre2-10.43...
+[1/2] Extracting pcre2-10.43: 100%
+[2/2] Installing nginx-1.26.2_5,3...
+===> Creating groups
+Using existing group 'www'
+===> Creating users
+Using existing user 'www'
+[2/2] Extracting nginx-1.26.2_5,3: 100%
+=====
+Message from nginx-1.26.2_5,3:
+
+--
+Recent version of the NGINX introduces dynamic modules support.  In
+FreeBSD ports tree this feature was enabled by default with the DSO
+knob.  Several vendor's and third-party modules have been converted
+to dynamic modules.  Unset the DSO knob builds an NGINX without
+dynamic modules support.
+
+To load a module at runtime, include the new `load_module'
+directive in the main context, specifying the path to the shared
+object file for the module, enclosed in quotation marks.  When you
+reload the configuration or restart NGINX, the module is loaded in.
+It is possible to specify a path relative to the source directory,
+or a full path, please see
+https://www.nginx.com/blog/dynamic-modules-nginx-1-9-11/ and
+http://nginx.org/en/docs/ngx_core_module.html#load_module for
+details.
+
+Default path for the NGINX dynamic modules is
+
+/usr/local/libexec/nginx.
+nginx_enable:  -> YES
+Performing sanity check on nginx configuration:
+nginx: the configuration file /usr/local/etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /usr/local/etc/nginx/nginx.conf test is successful
+Starting nginx.
+[00:01:57] [ debug ] [jtest] start() exits with status code 0
+[00:01:57] [ debug ] [jtest] `/usr/local/appjail/jails/jtest/init` exits with status code 0
+[00:01:58] [ debug ] [jtest] Unlocking jtest ...
+[00:01:59] [ debug ] [jtest] Done.
+# appjail fstab jail jtest
+NRO  ENABLED  NAME  DEVICE   MOUNTPOINT  TYPE        OPTIONS  DUMP  PASS
+0    1        -     /shared  shared-dir  <volumefs>  ro       0     0
+# appjail volume list jtest
+NAME        MOUNTPOINT  TYPE        UID  GID  PERM
+shared-dir  /shared     <pseudofs>  -    -    -
+# appjail label list jtest
+NAME                        VALUE
+initscripts.mounted.shared  1
+initscripts.packages.htop   1
+initscripts.packages.nginx  1
+# appjail run -s test_pwd jtest
+[00:00:02] [ debug ] [jtest] Running initscript `/usr/local/appjail/jails/jtest/init` ...
+/shared
+[00:00:03] [ debug ] [jtest] custom:test_pwd() exits with status code 0
+[00:00:03] [ debug ] [jtest] `/usr/local/appjail/jails/jtest/init` exits with status code 0
+# appjail run -s test_env -V env1=1234 -V env2=4321 jtest
+[00:00:02] [ debug ] [jtest] Running initscript `/usr/local/appjail/jails/jtest/init` ...
+env2=4321
+env1=1234
+SHELL=/bin/sh
+HOME=/root
+USER=root
+BLOCKSIZE=K
+MAIL=/var/mail/root
+MM_CHARSET=UTF-8
+LANG=C.UTF-8
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin:/root/bin
+TERM=screen.xterm-256color
+[00:00:02] [ debug ] [jtest] custom:test_env() exits with status code 0
+[00:00:02] [ debug ] [jtest] `/usr/local/appjail/jails/jtest/init` exits with status code 0
+# appjail stop jtest
+[00:00:03] [ debug ] [jtest] Running initscript `/usr/local/appjail/jails/jtest/init` ...
+Good byte!
+[00:00:03] [ debug ] [jtest] stop() exits with status code 0
+[00:00:03] [ debug ] [jtest] `/usr/local/appjail/jails/jtest/init` exits with status code 0
+[00:00:03] [ warn  ] [jtest] Stopping jtest...
+jtest: removed
+[00:00:05] [ debug ] [jtest] unmounting: umount "/usr/local/appjail/jails/jtest/jail/.appjail"
+```
+
+One of the most important parts of this initscript are the labels. Without labels, some functions will generate an error because they will not be able to run again. Or even when a function has not returned an error, such as `PKG`, it may be useful not to run it again.
