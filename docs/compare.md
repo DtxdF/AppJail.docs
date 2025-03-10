@@ -3,9 +3,9 @@
 | ZFS support | supported | supported | required | required | supported | ZFS support |
 | Language | C, Bourne Shell | Bourne Shell | Rust, Bourne Shell | Python | Bourne Shell | Language |
 | Automation | Makejail, Initscripts, Images | Templates | Flavours, Images | Plugins | Flavours | Automation |
-| Jail Type | clone, copy, tiny, thin, thick, empty, linux+debootstrap | thin, thick, vnet, Linux, empty | thick | clone, basejail, template, empty, thick | basejail | Jail Type |
+| Jail Type | clone, copy, tiny, thin, thick, empty, linux+debootstrap | clone, thin, thick, vnet, Linux, empty | thick | clone, basejail, template, empty, thick | basejail | Jail Type |
 | VNET | Supported | Supported | Supported | Supported | Not Supported | VNET |
-| Dynamic firewall | Yes | Requires a loopback interface | Yes | No | No | Dynamic firewall |
+| Dynamic firewall | Yes | Yes | Yes | No | No | Dynamic firewall |
 | Resource control | Full support | Yes, but it does not support statistics and all `rctl(8)` actions and does not support actions by rule | Basic: CPU and memory only | Legacy only | Not Supported | Resource control |
 | CPU Sets | Yes | No | Yes | Yes | Yes | CPU Sets |
 | IPv6 support | Yes (+SLAAC) | Yes | Yes | Yes | Yes | IPv6 support |
