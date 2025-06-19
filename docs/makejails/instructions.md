@@ -173,8 +173,8 @@ Run a Makejail.
 ### FROM
 
 ```
-FROM [--ajspec name] [--entrypoint [entrypoint|none]] [--platform
-        platform] image[:tag]
+FROM [--ajspec name] [--branch branch] [--entrypoint [entrypoint|none]]
+     [--platform platform] image[:tag]
 ```
 
 Import an image to create a jail.
@@ -182,6 +182,8 @@ Import an image to create a jail.
 `--ajspec` is equivalent to `appjail-image(1)` `import` `-N`.
 
 If `--entrypoint` is not specified, this instruction does what `IMAGE_ENTRYPOINT` describes. If set to `none`, it is assumed that the image is currently installed, so this instruction will not attempt to download it. See `appjail-image(1)` `import` for more details.
+
+`--branch` is equivalent to `appjail-image(1)` `import` `-b`.
 
 `--platform` is equivalent to `appjail-image(1)` `import` `-a`.
 
@@ -362,13 +364,17 @@ Note that you must set this method explicitly when the pathname has a `+` sign.
 
 Use the output of a command as the Makejail file.
 
-**git**+<ins>url</ins> [**--baseurl** <ins>url</ins>] [**--cachedir**] [**--file** <ins>makejail</ins>] [**--global**|**--local** [**--cachedir** <ins>directory</ins>|**--tmp**]
+**git**+<ins>url</ins> [**--baseurl** <ins>url</ins>] [**--branch** <ins>branch</ins>] [**--file** <ins>makejail</ins>] [**--global**|**--local** [**--cachedir** <ins>directory</ins>|**--tmp**]
 
-Clone a `git(1)` repository. With `--global`, the `git(1)` repository is cloned to the global cache directory defined by `GLOBAL_GIT_CACHEDIR`, with `--local`, the `git(1)` repository is cloned to the local cache directory defined by the `--cachedir` parameter, and with `--tmp` the `git(1)` repository is cloned as a temporary directory.
+Clone a `git(1)` repository.
+
+With `--global`, the `git(1)` repository is cloned to the global cache directory defined by `GLOBAL_GIT_CACHEDIR`, with `--local`, the `git(1)` repository is cloned to the local cache directory defined by the `--cachedir` parameter, and with `--tmp` the `git(1)` repository is cloned as a temporary directory.
 
 After the `git(1)` repository is cloned, the Makejail specified by `--file`, which by default is Makejail, is executed.
 
 `--basedir` is intended for other git-like methods.
+
+By default no branch is specified, but with `--branch` you can specify a specific branch.
 
 This instruction requires that `devel/git` be installed before use.
 
