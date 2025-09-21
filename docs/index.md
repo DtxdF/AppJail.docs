@@ -10,6 +10,7 @@ AppJail offers simple ways to do complex things.
 * Parallel startup (Healthcheckers, Jails & NAT).
 * UFS and ZFS support.
 * RACCT/RCTL support.
+* PkgBase support.
 * NAT support.
 * Port expose - network port forwarding into jail.
 * IPv4 and IPv6 support.
