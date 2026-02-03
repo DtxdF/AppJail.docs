@@ -37,8 +37,9 @@ In the case of the `STAGE` instruction, all commands written up to this instruct
 ```
 CMD --chroot command [args ...]
 CMD --jaildir command [args ...]
-CMD [--jexec] [--noclean] [--juser username|--huser username] command
-        [args ...]
+CMD [--jexec] [--noclean] [[--env name[=value]] ...] [--juser
+    username|--huser username] [--workdir working-directory] command
+    [args ...]
 CMD --local command [args ...]
 CMD --local-jaildir command [args ...]
 CMD --local-rootdir command [args ...]
@@ -72,8 +73,10 @@ Remember that this command uses the AppJail tokenizer, so you cannot use an inva
 `--jaildir` is equivalent to `appjail-cmd(1)` `jaildir`.
 
 `--jexec` `--noclean` is equivalent to `appjail-cmd(1)` `jexec` `-l`.
+`--jexec` `--env` is equivalent to `appjail-cmd(1)` `jexec` `-e`.
 `--jexec` `--juser` is equivalent to `appjail-cmd(1)` `jexec` `-U`.
 `--jexec` `--huser` is equivalent to `appjail-cmd(1)` `jexec` `-u`.
+`--jexec` `--workdir` is equivalent to `appjail-cmd(1)` jexec `-w`.
 
 `--local` runs a command from the host but using the local directory which may be different. See `INCLUDE` for more details.
 
