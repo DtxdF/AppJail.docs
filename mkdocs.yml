@@ -73,7 +73,6 @@ nav:
     - Introduction: makejails/intro.md
     - Deploying applications: makejails/deploy.md
     - 'Arguments & Build Arguments': makejails/arguments-and-build-arguments.md
-    - Jailed GUI (x11) applications: makejails/x11.md
     - 'Makejails & InitScripts': makejails/makejails-and-initscripts.md
     - From Command-Line Interface: makejails/cli.md
     - Maintenance of Cloned Makejails: makejails/maintenance.md
@@ -98,6 +97,7 @@ nav:
   - Dynamic DEVFS Ruleset Management: DEVFS.md
   - Open Containers Initiative (OCI): OCI.md
   - PkgBase: pkgbase.md
+  - Jailed GUI (x11) applications: x11.md
 plugins:
   - with-pdf:
       cover_subtitle: 'Simple and easy-to-use tool for creating portable jails'
