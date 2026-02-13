@@ -497,10 +497,12 @@ The rest of the parameters have the same meaning as `CMD` `--jexec`.
 ### SERVICE
 
 ```
-SERVICE args ...
+SERVICE [--jail] args ...
 ```
 
 Manipulate services. See `appjail-service(1)`.
+
+`--jail` is equivalent to `appjail-service(1)` `jail` `-j`.
 
 ### SET
 
@@ -525,12 +527,12 @@ Change the current stage. The default stage is **build**.
 ### SYSRC
 
 ```
-SYSRC [--jail|--local] name[[+|-]=value] ...
+SYSRC [--jexec [--jail]|--local] name[[+|-]=value] ...
 ```
 
 Safely edit system rc files within a jail.
 
-`--jail` is equivalent to `appjail-sysrc(1)` `jail`.
+`--jexec` (**default**) is equivalent to `appjail-sysrc(1)` `jail`. `--jail` is equivalent to `appjail-sysrc(1)` `jail` `-j`.
 
 `--local` is equivalent to `appjail-sysrc(1)` `local`. It is only recommended to use this parameter with thick jails instead of thin jails, as it may not work correctly with the latter.
 
