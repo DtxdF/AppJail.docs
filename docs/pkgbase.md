@@ -65,6 +65,117 @@ And since `appjail-update(1)` only works with thick jails, you can use it to per
 
 AppJail detects that you have used PkgBase previously, so it uses `pkg(8)` instead of `freebsd-update(8)`.
 
+## quarterly vs latest
+
+By default, AppJail uses the `latest` branch to bootstrap the files using `pkgbase(8)`, but AppJail includes a sample configuration file, `pkg.conf(5)`, that uses `quarterly` instead.
+
+```console
+# cat /usr/local/share/appjail/files/pkgbase/base.conf 
+FreeBSD-base: {
+  url: "https://pkg.FreeBSD.org/${ABI}/base_latest",
+  mirror_type: "srv",
+  signature_type: "fingerprints",
+  fingerprints: "/usr/share/keys/pkg",
+  enabled: yes
+}
+# cat /usr/local/share/examples/appjail/pkgbase/quarterly-release/base.conf 
+FreeBSD-base: {
+  url: "pkg+https://pkg.FreeBSD.org/${ABI}/base_release_${VERSION_MINOR}",
+  mirror_type: "srv",
+  signature_type: "fingerprints",
+  fingerprints: "/usr/share/keys/pkgbase-${VERSION_MAJOR}",
+  enabled: yes
+}
+```
+
+Generally, jail managers only restrict the creation of release directories based on architecture and version. In AppJail, this restriction is extended to include the release name, so you can have different releases with the same version number and architecture but with subtle differences. In our case, we can take advantage of this to create a release directory using the `quarterly` branch.
+
+```console
+# appjail fetch pkgbase -v 15 -r quarterly -c /usr/local/share/examples/appjail/pkgbase/quarterly-release -f /usr/share/keys/pkgbase-15
+...
+# appjail update release quarterly
+...
+# appjail fetch list amd64/15
+NAME
+default
+quarterly
+```
+
+If this is the first time you're creating the release directory, you don't need to assign it a name (don't configure it with `-r`), and AppJail will use the default one; however, I recommend that you have one release directory for `latest` (in my case this is `amd64/15/default`) and another for `quarterly`, so you can easily create jails using different branches when necessary.
+
+```console
+# appjail quick jlatest start overwrite=force alias ip4_inherit ephemeral
+...
+# appjail cmd jexec jlatest cat /etc/pkg/FreeBSD.conf
+#
+# To disable a repository, instead of modifying or removing this file,
+# create a /usr/local/etc/pkg/repos/FreeBSD.conf file, e.g.:
+#
+#   mkdir -p /usr/local/etc/pkg/repos
+#   echo "FreeBSD-ports: { enabled: no }" > /usr/local/etc/pkg/repos/FreeBSD.conf
+#   echo "FreeBSD-ports-kmods: { enabled: no }" >> /usr/local/etc/pkg/repos/FreeBSD.conf
+#
+# Note that the FreeBSD-base repository is disabled by default.
+#
+
+FreeBSD-ports: {
+  url: "pkg+https://pkg.FreeBSD.org/${ABI}/latest",
+  mirror_type: "srv",
+  signature_type: "fingerprints",
+  fingerprints: "/usr/share/keys/pkg",
+  enabled: yes
+}
+FreeBSD-ports-kmods: {
+  url: "pkg+https://pkg.FreeBSD.org/${ABI}/kmods_latest",
+  mirror_type: "srv",
+  signature_type: "fingerprints",
+  fingerprints: "/usr/share/keys/pkg",
+  enabled: yes
+}
+FreeBSD-base: {
+  url: "pkg+https://pkg.FreeBSD.org/${ABI}/base_latest",
+  mirror_type: "srv",
+  signature_type: "fingerprints",
+  fingerprints: "/usr/share/keys/pkg",
+  enabled: no
+}
+# appjail quick jquarterly start overwrite=force alias ip4_inherit release=quarterly ephemeral
+...
+# appjail cmd jexec jquarterly cat /etc/pkg/FreeBSD.conf
+#
+# To disable a repository, instead of modifying or removing this file,
+# create a /usr/local/etc/pkg/repos/FreeBSD.conf file, e.g.:
+#
+#   mkdir -p /usr/local/etc/pkg/repos
+#   echo "FreeBSD-ports: { enabled: no }" > /usr/local/etc/pkg/repos/FreeBSD.conf
+#   echo "FreeBSD-ports-kmods: { enabled: no }" >> /usr/local/etc/pkg/repos/FreeBSD.conf
+#
+# Note that the FreeBSD-base repository is disabled by default.
+#
+
+FreeBSD-ports: {
+  url: "pkg+https://pkg.FreeBSD.org/${ABI}/quarterly",
+  mirror_type: "srv",
+  signature_type: "fingerprints",
+  fingerprints: "/usr/share/keys/pkg",
+  enabled: yes
+}
+FreeBSD-ports-kmods: {
+  url: "pkg+https://pkg.FreeBSD.org/${ABI}/kmods_quarterly_${VERSION_MINOR}",
+  mirror_type: "srv",
+  signature_type: "fingerprints",
+  fingerprints: "/usr/share/keys/pkg",
+  enabled: yes
+}
+FreeBSD-base: {
+  url: "pkg+https://pkg.FreeBSD.org/${ABI}/base_release_${VERSION_MINOR}",
+  mirror_type: "srv",
+  signature_type: "fingerprints",
+  fingerprints: "/usr/share/keys/pkgbase-${VERSION_MAJOR}",
+  enabled: no
+}
+```
+
 ---
 
 **See also**:
