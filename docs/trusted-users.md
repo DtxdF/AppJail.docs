@@ -1,11 +1,8 @@
-!!! tip
+!!! note
 
-    Now an unprivileged user can run `appjail` without running `appjail-user` and this
-    is the recommended way. Much of the following explanation actually applies.
+    Historically, there were tools called `appjail-user` and `appjail-config-user` that served as wrappers for `appjail` and `appjail-config` to elevate privileges. Now an unprivileged user can run `appjail`/`appjail-config` without running `appjail-user`/`appjail-config-user` and this is the recommended way.
 
-When you share a server with co-workers or when you are the only person using a laptop, it is probably worth using AppJail without accessing the `root` account. AppJail has a simple but useful wrapper for such users named `appjail-user`.
-
-The `appjail-user` uses `RUNAS` to execute AppJail commands as root. You can set it in the AppJail configuration file to whatever you prefer, such as `sudo`, `doas` or native `mdo`. Of course, you need to install one of them first. I recommend using `security/doas` because it is simple and secure.
+When you share a server with co-workers or when you are the only person using a laptop, it is probably worth using AppJail without accessing the `root` account. `appjail` uses `RUNAS` (see `appjail.conf(5)`) to execute AppJail commands as `root`. You can set it in the AppJail configuration file to whatever you prefer, such as `sudo`, `doas` or native `mdo`. Of course, you need to install one of them first (except for `mdo`, which is native in FreeBSD). For simplicity, `RUNAS` defaults to `doas`, so the following document assumes `security/doas` is already installed on your system.
 
 The only rule required in your `doas.conf(5)` file is:
 
@@ -30,22 +27,20 @@ pw groupmod -n appjail -m "$USER"
 
 Where `$USER` is your user. For these changes to take effect, you must log back into the system if you are adding yourself.
 
-Now, any user that is in that group can run `appjail-user` as the administrator runs `appjail`:
+Now, any user that is in that group can run `appjail`.
 
 ```console
-$ appjail-user jail list
+$ appjail jail list
 ```
 
-Similarly, there is a variant for `appjail-config` named `appjail-config-user`. The instructions for using it are similar to the above:
+For `appjail-config`, the instructions for using it are similar to the above:
 
 ```
 permit nopass :appjail as root cmd appjail-config
 ```
 
-Now, any user that is in that group can run `appjail-config-user` as the administrator runs `appjail-config`:
+Now, any user that is in that group can run `appjail-config`.
 
 ```console
-$ appjail-config-user set -j myjail devfs_ruleset=15
+$ appjail-config set -j myjail devfs_ruleset=15
 ```
-
-Of course, unlike `appjail`, `appjail-config` does not require privileges for simple tasks like reading templates, but it does require privileges for writing them.
