@@ -102,46 +102,9 @@ Check the [official documentation](https://github.com/AppJail-makejails/php) for
 
 ### OCI and Makejails
 
-If you prefer a more traditional approach, you can use Makejails to deploy an OCI container. A jail will be created from the OCI image (mounted or imported, depending on the options you’ve used) and then customized using the Makejail. For example, [Navidrome](https://github.com/AppJail-makejails/navidrome), from AppJail-makejails, can be deployed using either `appjail oci run` or `appjail makejail`. Let’s take a look at the current Makejail.
+Sometimes an OCI image is used in conjunction with a Makejail. The main reason is to separate what should only run at build time from what runs at runtime. In OCI, this is already handled by `ENTRYPOINT` and `CMD`, but Makejails are slightly more powerful for certain applications.
 
-```
-ARG navidrome_from=ghcr.io/appjail-makejails/navidrome
-ARG navidrome_tag=latest
-
-OPTION start
-OPTION overwrite=force
-OPTION from=${navidrome_from}:${navidrome_tag}
-OPTION volume=navidrome-music mountpoint:/usr/local/share/navidrome/music owner:${puid} group:${pgid}
-OPTION volume=navidrome-db mountpoint:/var/db/navidrome owner:${puid} group:${pgid}
-
-INCLUDE gh+AppJail-makejails/user-mapping
-
-CMD --local appjail oci set-user "${APPJAIL_JAILNAME}" noroot
-CMD --local appjail oci set-boot on "${APPJAIL_JAILNAME}"
-CMD chown -R noroot:noroot /var/db/navidrome
-
-# The first run won't start the OCI process because we used the 'start'
-# option, so a second run is required for this to happen. For Director
-# users, this goes virtually unnoticed.
-STOP
-```
-
-Combining a Makejail with an OCI image may seem overkill, but this combination allows you to get the best of both worlds. Specifically, Makejails let you customize the jail at runtime more easily.
-
-In the previous example, the `from` option of `appjail-quick(1)` (don't confuse `from` from `appjail-quick(1)` with `FROM` from `appjail-makejail(5)`) mounts the OCI image from `ghcr.io/appjail-makejails/navidrome` using the `latest` tag. These values are derived from the arguments specified above (`navidrome_from` and `navidrome_tag`), so the user can modify them at runtime. For example, a user can build a custom OCI image and then reuse the same Makejail to deploy a jail. Later, we’ll see that some commands are run from the host to configure the jail itself so that the process runs inside it as `noroot` (using `appjail oci set-user`) and to set the boot option so that the process runs at boot time (using `appjail oci set-boot on`). This user is created from the Makejail we included earlier, [gh+AppJail-makejails/user-mapping](https://github.com/AppJail-makejails/user-mapping) which is created using a custom UID and GID specified at runtime.
-
-Next, to deploy the above, we can use the following commands:
-
-```console
-# appjail makejail \
-    -j navidrome \
-    -f gh+AppJail-makejails/navidrome \
-    -o virtualnet=":<random> default" \
-    -o nat \
-    -o expose="4533" \
-    -o container="args:--pull"
-# appjail start navidrome
-```
+For example, Puck creates a very restricted jail to generate a secure version of a PDF, and the resulting PDF is copied from the jail to the host. This Makejail also sets some `appjail-quick(1)` options, so if the application were used as an OCI image at runtime, the user would have to specify those options over and over again, and the developer would have to rethink how the PDF is copied from the jail to the host.
 
 ---
 
