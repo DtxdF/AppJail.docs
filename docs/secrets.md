@@ -123,6 +123,9 @@ $ appjail cmd jexec jsecret sh -c "echo 1 > /secrets/mysecrets/passwd"
 sh: cannot create /secrets/mysecrets/passwd: Read-only file system
 $ appjail cmd jexec jsecret cat /secrets/mysecrets/passwd
 321
+$ appjail secrets update -s mysecrets/passwd 1234
+$ appjail cmd jexec jsecret cat /secrets/mysecrets/passwd
+1234
 ```
 
 ### Memory-backed and the in-memory filesystem size
