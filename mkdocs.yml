@@ -86,6 +86,7 @@ nav:
     - Copy: backups/copy.md
   - 'Update & Upgrade': update-and-upgrade.md
   - File System Management: fs-mgmt.md
+  - Secrets: secrets.md
   - Trusted Users: trusted-users.md
   - 'Supervisor/Healthcheckers': healthcheckers.md
   - Images:
