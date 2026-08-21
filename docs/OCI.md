@@ -104,7 +104,7 @@ Check the [official documentation](https://github.com/AppJail-makejails/php) for
 
 Sometimes an OCI image is used in conjunction with a Makejail. The main reason is to separate what should only run at build time from what runs at runtime. In OCI, this is already handled by `ENTRYPOINT` and `CMD`, but Makejails are slightly more powerful for certain applications.
 
-For example, Puck creates a very restricted jail to generate a secure version of a PDF, and the resulting PDF is copied from the jail to the host. This Makejail also sets some `appjail-quick(1)` options, so if the application were used as an OCI image at runtime, the user would have to specify those options over and over again, and the developer would have to rethink how the PDF is copied from the jail to the host.
+For example, [Puck](https://github.com/AppJail-makejails/puck) creates a very restricted jail to generate a secure version of a PDF, and the resulting PDF is copied from the jail to the host. This Makejail also sets some `appjail-quick(1)` options, so if the application were used as an OCI image at runtime, the user would have to specify those options over and over again, and the developer would have to rethink how the PDF is copied from the jail to the host.
 
 ---
 
