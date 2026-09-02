@@ -10,7 +10,7 @@
 
     If you have an `appjail.conf(5)` file, this script will create a backup only once, but it will always overwrite your `appjail.conf(5)` file.
 
-AppJail works out of the box even if you haven't created an `appjail.conf(5)` configuration file, but some features are only enabled after installing certain optional dependencies, and it is recommended that you create a configuration file for performance and reliability reasons. For example, the `EXT_IF` parameter is used to define the external interface, and if you don’t set it, AppJail will have to guess it every time you run a subcommand. While this may not cause you any problems, it’s preferable to set a static value so you know to what extent your environment has changed and to avoid surprises.
+AppJail works out of the box even if you haven't created an `appjail.conf(5)` configuration file, but some features are only enabled after installing certain optional dependencies, and it is recommended that you create a configuration file for performance and reliability reasons. For example, the `EXT_IF` parameter is used to define the external interface, and if you don't set it, AppJail will have to guess it every time you run a subcommand. While this may not cause you any problems, it's preferable to set a static value so you know to what extent your environment has changed and to avoid surprises.
 
 However, there is a script called [`AppJail.setup`](https://github.com/DtxdF/AppJail.setup) that configures your host easily with a single command.
 
@@ -100,7 +100,7 @@ $ ./AppJail.setup \
 
 AppJail includes numerous commands, but there is one that serves as the engine for other commands such as `appjail-oci(1)`, `appjail-image(1)`, or even `appjail-makejail(1)`, and it is called `appjail-quick(1)`. With `appjail-quick(1)`, you create a jail by specifying `appjail-quick(1)`'s options, and the jail is customized based on those options.
 
-Let’s begin by bootstrapping a release...
+Let's begin by bootstrapping a release...
 
 ### Bootstrapping a release
 
@@ -333,7 +333,7 @@ We have replaced `alias ip4_inherit ip6_inherit` with `virtualnet=":<random> def
 
     2. `default`: This tells AppJail to use this network as the default router. Additionally, in this case, it tells `appjail-quick(1)` to use this network for options that require it, such as `nat` or `expose`, so it is not necessary to explicitly set it in those options.
 
-2. `nat`: By using the options shown above, we are essentially allowing the jail to communicate with the outside world through the external interface configured with `AppJail.setup`. This option creates a `pf(4)` rule to translate the jail’s IPv4 address, assigned by the virtual network, to the IP address of the external interface. In most cases, this essentially means "allow Internet access in this jail."
+2. `nat`: By using the options shown above, we are essentially allowing the jail to communicate with the outside world through the external interface configured with `AppJail.setup`. This option creates a `pf(4)` rule to translate the jail's IPv4 address, assigned by the virtual network, to the IP address of the external interface. In most cases, this essentially means "allow Internet access in this jail."
 
 Once virtual network is created, you can list of all of them using the following command:
 
@@ -596,7 +596,7 @@ In the previous examples, we have destroyed our jail over and over again. All th
 
 Traditional FreeBSD users may find this unsettling, as they treat their jails as if they were pets: installing packages, editing files here and there, or, more specifically, treating them as if they were other hosts. The problem with this approach is that users don't keep track of exactly how many changes they've made over time, and when performing tedious tasks like upgrading a jail, this leads to errors due to the entropy added. AppJail offers a better alternative to the traditional approach.
 
-The first step in implementing this concept is to consider which data should be preserved even if we destroy our jail. In the case of the `jssh` jail we created earlier, these should be `/etc/ssh` and `/noroot`. The first directory is where SSH files, such as keys, are stored, and the second is the user's home directory. The second step is to consider the owner, group, and file mode of the files and directories containing the data that should persist. Services like SSH require specific permissions, and in the case of our home directory, these must match the same UID and GID as the file we created inside the jail. Let’s rewrite our Makejail based on this analysis.
+The first step in implementing this concept is to consider which data should be preserved even if we destroy our jail. In the case of the `jssh` jail we created earlier, these should be `/etc/ssh` and `/noroot`. The first directory is where SSH files, such as keys, are stored, and the second is the user's home directory. The second step is to consider the owner, group, and file mode of the files and directories containing the data that should persist. Services like SSH require specific permissions, and in the case of our home directory, these must match the same UID and GID as the file we created inside the jail. Let's rewrite our Makejail based on this analysis.
 
 **Makejail**:
 
