@@ -137,7 +137,7 @@ amd64  15            default
 
 ### Create a Jail
 
-AppJail can create traditional jails once a release has been boostrapped, and the recommended command for this task is `appjail-quick(1)`.
+AppJail can create traditional jails once a release has been bootstrapped, and the recommended command for this task is `appjail-quick(1)`.
 
 ```console
 $ appjail quick myjail start
