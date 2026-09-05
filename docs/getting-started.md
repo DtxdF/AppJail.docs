@@ -135,6 +135,17 @@ amd64  15.1-RELEASE  default
 amd64  15            default
 ```
 
+No matter which release you choose, always update it.
+
+```console
+$ # pkgbase(8)
+$ appjail fetch update release -v 15
+...
+$ # distribution sets
+$ env PAGER=cat appjail update release -v 15.1-RELEASE
+...
+```
+
 ### Create a Jail
 
 AppJail can create traditional jails once a release has been bootstrapped, and the recommended command for this task is `appjail-quick(1)`.
@@ -325,7 +336,7 @@ $ appjail quick myjail start virtualnet=":<random> default" nat overwrite=force
 We have replaced `alias ip4_inherit ip6_inherit` with `virtualnet=":<random> default" nat`. Let's break down each option:
 
 1. `virtualnet`
-    1. `:<random>`: Use the default virtual network created by AppJail (usually `ajnet`) or create one if it doesn't exist. You can explicitly set a virtual network by specifying it as follows: `ajnet:<random> default`. However, when you explicitly set a virtual network, AppJail will not create it for you.
+    1. `:<random>`: Use the default virtual network created by AppJail (usually `ajnet`) or create one if it doesn't exist. You can explicitly set a virtual network by specifying it as follows: `ajnet:<random>`. However, when you explicitly set a virtual network, AppJail will not create it for you.
         
         After the colon, the word `<random>` appears. This tells AppJail to use a random name as the name of the jail interface. We can explicitly set it to an arbitrary name, but in most cases this doesn't matter. The interface name becomes important when using something like `pf(4)` inside the jail and you want a more predictable interface name.
 
@@ -365,7 +376,7 @@ $ appjail cmd jexec myjail host example.org
 ;; connection timed out; no servers could be reached
 ```
 
-In order for the jails to communicate with the DNS server installed and configured on your server, you must add an `appjail-label(1)` used by the security group hooks. In the `pf.conf(5)` file installed by the `AppJail.setup` script, a very useful `pf(4)` table called `allow-dns` is created, which allows you to add IPv4 addresses without having to define a rule each time.
+In order for the jails to communicate with the DNS server installed and configured on your host, you must add an `appjail-label(1)` used by the security group hooks. In the `pf.conf(5)` file installed by the `AppJail.setup` script, a very useful `pf(4)` table called `allow-dns` is created, which allows you to add IPv4 addresses without having to define a rule each time.
 
 ```console
 $ appjail quick myjail \
