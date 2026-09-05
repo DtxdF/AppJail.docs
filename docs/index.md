@@ -34,4 +34,5 @@ AppJail offers simple ways to do complex things.
 * Images - Your jail in a single file!
 * DEVFS support - Dynamic device management!
 * OCI support - Containers everywhere!
+* Secrets management - Securely inject and manage sensitive configuration.
 * ...
