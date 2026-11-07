@@ -139,7 +139,7 @@ No matter which release you choose, always update it.
 
 ```console
 $ # pkgbase(8)
-$ appjail fetch update release -v 15
+$ appjail update release -v 15
 ...
 $ # distribution sets
 $ env PAGER=cat appjail update release -v 15.1-RELEASE
